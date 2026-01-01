@@ -6,14 +6,10 @@ import json
 import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret-key-change-this'
+# महत्वाची टीप: सिक्युरिटीसाठी ही Key नंतर बदलावी
+app.config['SECRET_KEY'] = 'secret-key-change-this' 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
-
-# --- IMP: हे इथे ऍड केले आहे (Database Creation Fix) ---
-with app.app_context():
-    db.create_all()
-# -----------------------------------------------------
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -25,7 +21,7 @@ class User(UserMixin, db.Model):
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
     username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(100))  # New Column Added
+    email = db.Column(db.String(100))  
     password = db.Column(db.String(100), nullable=False)
     
     # Security Questions
@@ -90,11 +86,10 @@ def login():
     
     return jsonify({'success': False, 'message': 'Invalid username or password'})
 
-# --- NEW: CHECK SESSION ROUTE ---
+# --- CHECK SESSION ROUTE ---
 @app.route('/api/check_session', methods=['GET'])
 def check_session():
     if current_user.is_authenticated:
-        # User is already logged in
         full_name = f"{current_user.first_name} {current_user.last_name}".strip()
         return jsonify({
             'is_logged_in': True, 
@@ -204,6 +199,11 @@ def get_data():
 def logout():
     logout_user()
     return jsonify({'success': True})
+
+# --- IMP: Database Creation Logic (Placed correctly at the end) ---
+with app.app_context():
+    db.create_all()
+# ----------------------------------------------------------------
 
 if __name__ == '__main__':
     app.run(debug=True)
