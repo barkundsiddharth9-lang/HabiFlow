@@ -1331,7 +1331,7 @@
 
     // --- REPLACED LOCALSTORAGE INIT WITH DB INIT ---
     async function initAppWithDB(firstName) { 
-        document.getElementById('greetingDisplay').innerText = `Welcome Back, ${firstName}!`;
+        document.getElementById('greetingDisplay').innerText = `Welcome Back, ${firstName}`;
         document.getElementById('habitInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') addHabit(); });
         
         // Load Data from Server
@@ -1995,4 +1995,5 @@
     });
 </script>
 </body>
+
 </html>
