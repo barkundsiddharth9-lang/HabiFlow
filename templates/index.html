@@ -14,6 +14,32 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+    <script>
+      // Right Click Disable
+      document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+      });
+
+      // F12 and Inspect Shortcuts Disable
+      document.onkeydown = function(e) {
+        if(event.keyCode == 123) { // F12 key
+           return false;
+        }
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { // Ctrl+Shift+I
+           return false;
+        }
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { // Ctrl+Shift+C
+           return false;
+        }
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { // Ctrl+Shift+J
+           return false;
+        }
+        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { // Ctrl+U (View Source)
+           return false;
+        }
+      }
+    </script>
+
     <style>
         /* --- ORIGINAL CSS --- */
         :root {
@@ -1118,7 +1144,7 @@
         const data = await res.json();
         
         if(data.success) {
-            document.getElementById('greetingDisplay').innerText = `Welcome Back, ${newName}`;
+            document.getElementById('greetingDisplay').innerText = `Welcome Back, ${newName}!`;
             alert(data.message);
         } else {
             alert("Error updating profile.");
@@ -1331,7 +1357,7 @@
 
     // --- REPLACED LOCALSTORAGE INIT WITH DB INIT ---
     async function initAppWithDB(firstName) { 
-        document.getElementById('greetingDisplay').innerText = `Welcome Back, ${firstName}`;
+        document.getElementById('greetingDisplay').innerText = `Welcome Back, ${firstName}!`;
         document.getElementById('habitInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') addHabit(); });
         
         // Load Data from Server
@@ -1995,6 +2021,4 @@
     });
 </script>
 </body>
-
 </html>
-
