@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HabiFlow - Smart Tracker</title>
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='32' fill='%2300AA55'/><text x='50%25' y='54%25' font-family='cursive, sans-serif' font-weight='bold' font-style='italic' font-size='40' fill='white' text-anchor='middle' dominant-baseline='middle'>H</text></svg>">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Leckerli+One&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        /* --- ORIGINAL CSS --- */
+        :root {
+            --bg-dark: #0f1115;
+            --panel-bg: #1a1d23;
+            --btn-bg: #21262d;
+            --accent-blue: #0095ff;
+            --accent-green: #00AA55; /* Updated to your color #0A5 */
+            --accent-yellow: #e3b341; 
+            --accent-red: #ff4d4d;
+            --text-gray: #8b949e;
+            --text-white: #e6edf3;
+            --border: #30363d;
+            --input-bg: #0d1117;
+            
+            /* YOUR NEW LOGO COLORS */
+            --logo-main: #00AA55; /* #0A5 Code */
+            --logo-text: #ffffff; 
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* --- AUTH SYSTEM CSS --- */
+        #authSection {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--bg-dark);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .auth-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- CSS LOGO STYLE --- */
+        .css-logo-circle {
+            width: 50px;
+            height: 50px;
+            background-color: var(--logo-main);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Leckerli One', cursive;
+            font-size: 32px;
+            box-shadow: 0 0 15px rgba(0, 170, 85, 0.4);
+            user-select: none;
+            padding-top: 4px;
+            box-sizing: border-box;
+        }
+
+        /* Big Logo for Login Screen */
+        .auth-logo-big {
+            width: 100px;
+            height: 100px;
+            font-size: 60px;
+            margin-bottom: 20px;
+            padding-top: 8px;
+        }
+
+        .auth-tabs { display: flex; justify-content: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); width: 100%; }
+        .auth-tab { padding: 10px 20px; cursor: pointer; font-size: 1.1rem; color: var(--text-gray); font-weight: bold; border-bottom: 2px solid transparent; }
+        .auth-tab.active { color: var(--accent-blue); border-bottom: 2px solid var(--accent-blue); }
+        
+        .auth-form { width: 100%; }
+        .auth-form h2 { margin-bottom: 20px; color: var(--text-white); text-transform: uppercase; letter-spacing: 1px; }
+
+        .auth-input {
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            background: var(--input-bg); border: 1px solid var(--border);
+            border-radius: 5px; color: var(--text-white); box-sizing: border-box;
+        }
+        .auth-input:focus { outline: none; border-color: var(--accent-blue); }
+
+        .auth-btn { width: 100%; padding: 12px; background: var(--accent-blue); color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .auth-btn.green { background: var(--accent-green); }
+        .forgot-link { display: block; margin-top: 15px; color: var(--accent-blue); text-decoration: none; font-size: 0.9rem; cursor: pointer; }
+        .row-inputs { display: flex; gap: 10px; }
+
+        #mainAppSection { display: none; }
+
+        /* --- MAIN APP CSS --- */
+        .user-greeting { font-size: 1.5rem; color: var(--accent-green); font-weight: bold; margin-bottom: 5px; display: block; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; box-sizing: border-box; }
+        
+        /* --- HEADER & QUOTE CSS --- */
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 25px; 
+            gap: 20px; 
+            margin-top: 20px;
+            flex-wrap: wrap; 
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        /* --- HEADER LOGO CONTAINER --- */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 6px 15px 6px 8px;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+            cursor: pointer; /* ADDED POINTER CURSOR */
+        }
+        
+        .logo-container:hover {
+            transform: scale(1.02);
+            border-color: var(--logo-main);
+        }
+
+        .app-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--logo-main); /* "Habi" becomes Green #0A5 */
+            letter-spacing: -0.5px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        
+        .app-name span {
+            color: var(--text-white); /* "Flow" becomes White */
+        }
+
+        .quote-box {
+            padding: 15px 20px;
+            background: linear-gradient(90deg, rgba(0, 170, 85, 0.1) 0%, rgba(0, 149, 255, 0.05) 100%);
+            border-left: 4px solid var(--accent-yellow);
+            border-radius: 8px;
+            max-width: 500px;
+            text-align: right;
+            box-sizing: border-box;
+            flex-grow: 1; 
+        }
+        
+        .quote-text {
+            font-size: 0.95rem;
+            font-style: italic;
+            color: var(--text-white);
+            font-weight: 500;
+            line-height: 1.4;
+        }
+        
+        /* --- USER MENU STYLES --- */
+        .top-bar { display: flex; justify-content: flex-end; padding-top: 10px; position: relative; }
+        .user-menu-container { position: relative; display: inline-block; }
+        .user-menu-btn { 
+            background: transparent; border: none; color: var(--text-white); 
+            font-size: 1.8rem; cursor: pointer; padding: 0 10px; 
+            border-radius: 50%; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .user-menu-btn:hover { background: var(--btn-bg); }
+        
+        .user-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background-color: var(--panel-bg);
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            z-index: 1001;
+            overflow: hidden;
+        }
+        .user-dropdown a {
+            color: var(--text-white);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .user-dropdown a:hover { background-color: var(--btn-bg); }
+        .show { display: block; }
+
+        /* --- SETTINGS MODAL STYLES --- */
+        .settings-content { width: 450px; text-align: left; }
+        .settings-section { margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+        .settings-section:last-child { border-bottom: none; }
+        .settings-title { font-size: 0.8rem; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; font-weight: bold; }
+        
+        .profile-pic-placeholder {
+            width: 80px; height: 80px; background: var(--btn-bg); border-radius: 50%; 
+            margin: 0 auto 20px auto; display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: var(--text-gray); border: 2px solid var(--border);
+        }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.85rem; color: var(--text-white); margin-bottom: 5px; }
+        .settings-input { 
+            width: 100%; padding: 10px; background: var(--input-bg); 
+            border: 1px solid var(--border); border-radius: 6px; 
+            color: var(--text-white); box-sizing: border-box; 
+        }
+        .settings-input:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .settings-btn {
+            width: 100%; padding: 10px; background: var(--btn-bg); 
+            border: 1px solid var(--border); color: var(--text-white);
+            border-radius: 6px; cursor: pointer; text-align: left;
+            margin-bottom: 10px; transition: 0.2s;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .settings-btn:hover { border-color: var(--accent-blue); }
+
+        /* --- EXISTING CSS CONTINUED --- */
+        #pdfPage1 { width: 100%; }
+        #monthlyGraphContainer { width: 100%; }
+        #detailedReportContainer { width: 100%; background: #161b22; padding: 40px; border-radius: 12px; position: absolute; left: -9999px; top: 0; z-index: -1; }
+        
+        .report-table { width: 100%; border-collapse: collapse; color: var(--text-white); font-family: 'Segoe UI', sans-serif; border: 1px solid var(--border); }
+        .report-table th, .report-table td { border: 1px solid var(--border); padding: 15px; text-align: left; vertical-align: top; }
+        .report-table th { background: #0d1117; color: var(--accent-blue); text-transform: uppercase; font-size: 0.9rem; border-bottom: 2px solid var(--border); }
+        .cat-row td { min-height: 100px; vertical-align: middle; }
+        .cat-excellent { border-left: 8px solid var(--accent-green); background: rgba(16, 185, 129, 0.05); }
+        .cat-good { border-left: 8px solid var(--accent-blue); background: rgba(0, 149, 255, 0.05); }
+        .cat-average { border-left: 8px solid var(--accent-yellow); background: rgba(227, 179, 65, 0.05); }
+        .cat-bad { border-left: 8px solid var(--accent-red); background: rgba(255, 77, 77, 0.05); }
+        
+        .habit-list-item { display: block; margin-bottom: 8px; font-size: 1rem; font-weight: 500; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        
+        .pdf-progress-container { margin-top: 8px; margin-bottom: 8px; }
+        .pdf-progress-label { font-size: 0.8rem; color: var(--text-gray); margin-bottom: 4px; font-weight: bold; }
+        .pdf-progress-track { width: 100%; height: 14px; background: #0d1117; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; position: relative; }
+        .pdf-progress-fill { height: 100%; border-radius: 10px; transition: width 0.3s; }
+
+        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.4); } 70% { box-shadow: 0 0 0 4px rgba(255, 77, 77, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); } }
+        .shake-active { animation: shake 0.3s ease-in-out; }
+        .hover-up { transition: transform 0.2s ease-out; }
+        .hover-up:hover { transform: translateY(-3px); }
+
+        /* HEADER & NAV BUTTONS */
+        .month-nav { display: flex; align-items: center; gap: 15px; background: var(--panel-bg); padding: 5px 10px; border-radius: 12px; border: 1px solid var(--border); flex-wrap: wrap; }
+        .nav-btn { background: transparent; border: 1px solid transparent; color: var(--text-white); width: 35px; height: 35px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+        .nav-btn:hover { background: var(--btn-bg); border-color: var(--text-gray); }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        #monthLabel { margin: 0 15px; font-size: 1.5rem; font-weight: 700; min-width: 180px; text-align: center; color: var(--text-white); }
+
+        .stats-panel { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 30px; display: grid; grid-template-columns: 1fr 1fr 2fr 1.5fr; gap: 30px; align-items: center; }
+        .stat-item { display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
+        .stat-label { color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
+        .stat-value { font-size: 2.2rem; font-weight: 700; color: var(--text-white); }
+        .progress-track { background: #2d333b; height: 12px; border-radius: 6px; width: 100%; overflow: hidden; margin-top: 10px; }
+        .progress-fill { background: var(--accent-green); height: 100%; width: 0%; transition: width 0.5s; box-shadow: 0 0 10px rgba(0, 170, 85, 0.4); }
+        
+        .daily-donut-container { display: flex; align-items: center; justify-content: center; background: var(--input-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; }
+        .circular-chart { display: block; margin: 0 auto; max-width: 120px; max-height: 120px; }
+        .circle-bg { fill: none; stroke: var(--border); stroke-width: 2.5; }
+        .circle { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke: var(--accent-green); transition: stroke-dashoffset 0.6s ease-out; transform: rotate(-90deg); transform-origin: 50% 50%; }
+        .percentage-text { fill: var(--text-white); font-family: 'Segoe UI', sans-serif; font-weight: 800; font-size: 0.55em; text-anchor: middle; }
+        .label-text { fill: var(--text-gray); font-family: 'Segoe UI', sans-serif; font-weight: 500; font-size: 0.22em; text-anchor: middle; }
+
+        /* --- UPDATED INPUT GROUP WITH EMOJI --- */
+        .input-group { display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
+        .input-wrapper { position: relative; flex-grow: 1; display: flex; align-items: center; }
+        
+        /* Input padding updated for emoji btn */
+        input[type="text"] { width: 100%; background: var(--panel-bg); border: 1px solid var(--border); padding: 14px; padding-right: 40px; border-radius: 8px; color: var(--text-white); outline: none; min-width: 200px; box-sizing: border-box; }
+        
+        .btn-add { background: var(--accent-blue); color: white; border: none; padding: 0 30px; border-radius: 8px; font-weight: bold; cursor: pointer; height: 48px; }
+        .btn-sec { background: var(--panel-bg); color: var(--text-white); border: 1px solid var(--border); padding: 0 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; height: 48px; justify-content: center;}
+        .btn-del-multi { border-color: var(--accent-red); color: var(--accent-red); }
+        .btn-del-multi:hover { background: var(--accent-red); color: white; }
+
+        .table-container { background: var(--panel-bg); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px; width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th, td { border-bottom: 1px solid var(--border); padding: 10px 2px; text-align: center; font-size: 0.65rem; border-right: 1px solid var(--border); color: var(--text-white); }
+        .week-header { background: #0d1117; color: var(--accent-blue); font-size: 0.75rem; padding: 8px 0; border-bottom: 1px solid var(--border); }
+        .habit-col-header { width: 250px; text-align: left; padding-left: 20px; font-size: 0.9rem; color: var(--text-white); background: #161b22; border-right: 1px solid var(--border); }
+        td:first-child { text-align: left; padding-left: 15px; width: 250px; border-right: 1px solid var(--border); font-size: 0.9rem; font-weight: 600; position: relative; }
+        
+        .habit-container { display: flex; align-items: center; gap: 10px; height: 30px; cursor: pointer; }
+        .habit-name-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; cursor: pointer; transition: color 0.2s; }
+        .habit-name-text:hover { color: var(--accent-blue); text-decoration: underline; }
+        
+        .left-action-zone { width: 40px; height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; border-right: 1px solid transparent; margin-right: 5px; }
+        .menu-dots { color: var(--text-gray); font-size: 1.2rem; display: block; }
+        .action-btns { display: none; gap: 8px; }
+        .left-action-zone:hover .menu-dots { display: none; }
+        .left-action-zone:hover .action-btns { display: flex; }
+        
+        .edit-icon { cursor: pointer; transition: 0.2s; color: var(--text-white); font-size: 1rem; }
+        .edit-icon:hover { color: var(--accent-blue); transform: scale(1.2); }
+        .del-icon { cursor: pointer; transition: 0.2s; color: var(--text-white); font-size: 1rem; }
+        .del-icon:hover { color: var(--accent-red); transform: scale(1.2); }
+
+        .check-box { width: 18px; height: 18px; cursor: pointer; appearance: none; border: 2px solid #3d4450; border-radius: 4px; position: relative; margin: 0 auto; display: block; }
+        .check-box:checked { background-color: var(--accent-green); border-color: var(--accent-green); }
+        .check-box:checked::after { content: '✓'; position: absolute; color: #000; left: 3px; top: -2px; font-size: 12px; font-weight: 900; }
+        .check-box.missed-today { border-color: var(--accent-red) !important; background-color: rgba(255, 77, 77, 0.15); animation: pulse-red 2s infinite; }
+        .check-box.missed-past { border-color: var(--accent-red) !important; background-color: rgba(255, 77, 77, 0.1); }
+        .check-box.missed-past::after { content: '✕'; position: absolute; color: var(--accent-red); font-size: 14px; font-weight: 900; left: 2px; top: -3px; }
+
+        .daily-overview-card { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; gap: 30px; }
+        .daily-info h2 { margin: 0 0 5px 0; font-size: 1.4rem; color: var(--text-white); }
+        .daily-date { color: var(--text-gray); font-size: 0.9rem; }
+        .daily-message { margin-top: 10px; font-style: italic; color: var(--accent-blue); font-size: 0.95rem; }
+        .daily-progress-container { flex-grow: 1; max-width: 50%; }
+        .dp-labels { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; font-size: 0.9rem; color: var(--text-white); }
+        .dp-track { width: 100%; height: 16px; background: rgba(255, 77, 77, 0.35); border-radius: 8px; overflow: hidden; }
+        .dp-fill { height: 100%; background: var(--accent-green); transition: width 0.5s ease; width: 0%; }
+
+        .week-cards-header { display: flex; justify-content: flex-start; align-items: center; gap: 30px; margin: 40px 0 20px 0; padding-bottom: 15px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+        .week-cards-title { font-size: 1.2rem; font-weight: 700; color: var(--text-white); }
+        .week-nav-pills { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
+        .week-pill { background: var(--panel-bg); border: 1px solid var(--border); color: var(--text-gray); padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-weight: 600; white-space: nowrap; }
+        .week-pill:hover { border-color: var(--accent-blue); color: var(--text-white); transform: translateY(-2px); }
+        .week-pill.active { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
+
+        .week-graph-container { background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 30px; overflow-x: auto; }
+        .wg-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; color: var(--text-gray); font-weight: bold; min-width: 300px; }
+        .wg-title { color: var(--text-white); font-size: 1.1rem; }
+        .wg-body { display: flex; align-items: flex-end; height: 200px; margin-bottom: 15px; gap: 15px; min-width: 500px; }
+        .wg-bars { flex-grow: 1; display: flex; justify-content: space-between; align-items: flex-end; height: 100%; padding: 0 10px; }
+        .wg-col { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+        .wg-stats-top { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-bottom: 4px; }
+        .wg-count { font-size: 0.75rem; font-weight: bold; color: var(--text-white); }
+        .wg-perc { font-size: 0.65rem; color: var(--text-gray); }
+        .wg-track { width: 40px; height: 180px; background: rgba(255, 255, 255, 0.05); display: flex; align-items: flex-end; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+        .wg-fill { width: 100%; background: var(--accent-green); transition: height 0.5s ease; }
+        .wg-day-lbl { font-size: 0.75rem; color: var(--text-gray); margin-top: 5px; }
+        .wg-footer { display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 15px; margin-top: 5px; min-width: 300px; }
+        .wg-stat-big { font-size: 1.2rem; font-weight: 800; color: var(--text-white); font-style: italic; }
+        .wg-stat-perc { font-size: 1rem; color: var(--text-gray); }
+
+        .monthly-graph-container { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-top: 40px; margin-bottom: 40px; page-break-before: always; overflow-x: auto;}
+        .mg-bars { display: flex; justify-content: space-around; align-items: flex-end; height: 250px; padding-top: 20px; min-width: 500px; }
+        .mg-col { display: flex; flex-direction: column; align-items: center; width: 15%; gap: 10px; }
+        .mg-track { width: 40px; height: 200px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 6px; display: flex; align-items: flex-end; overflow: hidden; }
+        .mg-fill { width: 100%; background: var(--accent-green); transition: height 0.6s ease; }
+        .mg-label { font-size: 0.9rem; color: var(--text-white); font-weight: 600; }
+        .mg-stats { font-size: 0.8rem; color: var(--text-gray); margin-bottom: 5px; }
+
+        .daily-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .day-card { background: var(--panel-bg); padding: 20px 10px; border-radius: 12px; text-align: center; border: 1px solid var(--border); transition: 0.2s; }
+        .day-card:hover { border-color: var(--accent-blue); transform: translateY(-3px); }
+        .day-label { font-size: 0.85rem; color: var(--text-gray); margin-bottom: 8px; }
+        .day-perc { font-size: 2rem; font-weight: bold; color: var(--accent-green); margin: 5px 0; }
+        .day-stat-line { font-size: 0.8rem; font-weight: 600; margin-top: 4px; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--panel-bg); border-radius: 15px; border: 1px solid var(--border); width: 90%; max-width: 500px; padding: 20px; color: var(--text-white); }
+        .stats-modal-content { width: 90%; max-width: 850px; padding: 30px; }
+        
+        .stats-cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
+        .stat-detail-card { background: var(--input-bg); padding: 20px; border-radius: 10px; border: 1px solid var(--border); }
+        .stat-card-label { color: var(--text-gray); font-size: 0.7rem; letter-spacing: 1px; margin-bottom: 10px; }
+        .stat-card-value { font-size: 1.8rem; font-weight: bold; color: var(--text-white); }
+        .yearly-months-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: 8px; }
+        .month-overview-card { background: var(--input-bg); border: 1px solid var(--border); padding: 10px 5px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; gap: 5px; }
+        .month-overview-card span { font-size: 0.65rem; color: var(--text-gray); }
+        .month-overview-card.active-month { border-color: var(--accent-green); background: rgba(0, 255, 136, 0.05); }
+        .btn-close { background: var(--accent-blue); color: white; border: none; padding: 10px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; float: right; margin-top: 20px; }
+        .modal-list-item { padding: 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 15px; color: var(--text-white); }
+        .modal-list-item:hover { background: var(--input-bg); }
+        .modal-check { width: 20px; height: 20px; accent-color: var(--accent-red); cursor: pointer; }
+
+        .line-graph-section { background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 40px; position: relative; overflow-x: auto; }
+        .lg-header { text-align: center; margin-bottom: 20px; color: var(--text-white); font-weight: 700; letter-spacing: 1px; font-size: 0.9rem; text-transform: uppercase; }
+        .graph-svg-container { width: 100%; height: 250px; position: relative; min-width: 600px; }
+        .y-axis-label { position: absolute; right: 0; color: #666; font-size: 0.6rem; text-align: right; width: 30px; line-height: 1; }
+        .grid-line { stroke: var(--border); stroke-width: 0.5; }
+        .chart-line { fill: none; stroke: var(--accent-green); stroke-width: 2; }
+        .chart-area { fill: url(#gradient); stroke: none; opacity: 0.5; }
+        .chart-dot { fill: #fff; stroke: var(--accent-green); stroke-width: 2; r: 3; transition: r 0.2s; }
+        .chart-dot:hover { r: 5; cursor: pointer; }
+
+        /* --- EMOJI PICKER CSS --- */
+        .emoji-trigger-btn {
+            position: absolute;
+            right: 10px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            filter: grayscale(100%);
+            transition: 0.2s;
+            padding: 5px;
+            border-radius: 50%;
+        }
+
+        .emoji-trigger-btn:hover {
+            filter: grayscale(0%);
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        .emoji-picker-container {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 300px;
+            max-height: 300px;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 10px;
+            margin-top: 5px;
+        }
+
+        .emoji-picker-container.show {
+            display: block;
+        }
+
+        .emoji-category-title {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            margin: 10px 0 5px 0;
+            font-weight: bold;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 2px;
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 5px;
+        }
+
+        .emoji-item {
+            cursor: pointer;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .emoji-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.2);
+        }
+
+        /* Scrollbar styling for emoji picker */
+        .emoji-picker-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .emoji-picker-container::-webkit-scrollbar-track {
+            background: var(--bg-dark); 
+        }
+        .emoji-picker-container::-webkit-scrollbar-thumb {
+            background: var(--border); 
+            border-radius: 3px;
+        }
+
+        /* --- MEDIA QUERIES FOR RESPONSIVE DESIGN --- */
+        @media (max-width: 900px) {
+            .stats-panel { grid-template-columns: 1fr 1fr; }
+            .stats-cards-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; align-items: flex-start; }
+            .quote-box { text-align: left; max-width: 100%; }
+        }
+
+        @media (max-width: 600px) {
+            .stats-panel { grid-template-columns: 1fr; gap: 20px; padding: 15px; }
+            .daily-overview-card { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .daily-progress-container { max-width: 100%; width: 100%; }
+            .week-cards-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .input-group { flex-direction: column; }
+            .btn-add, .btn-sec { width: 100%; }
+            .stats-cards-grid { grid-template-columns: 1fr; }
+            .row-inputs { flex-direction: column; }
+            .month-nav { width: 100%; justify-content: space-between; box-sizing: border-box; }
+            #monthLabel { font-size: 1.2rem; min-width: auto; }
+            .settings-content { width: 95%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="authSection">
+        <div class="auth-container">
+            <div class="css-logo-circle auth-logo-big">H</div>
+            
+            <div id="loginForm">
+                <div class="auth-tabs">
+                    <div class="auth-tab active">Login</div>
+                    <div class="auth-tab" onclick="switchTab('signup')">Sign Up</div>
+                </div>
+                <div class="auth-form">
+                    <h2>LOGIN</h2>
+                    <input type="text" id="loginUsername" class="auth-input" placeholder="Username">
+                    <input type="password" id="loginPassword" class="auth-input" placeholder="Password">
+                    <button class="auth-btn" onclick="loginUser()">Login</button>
+                    <a class="forgot-link" onclick="switchTab('forgot')">Forgot Password?</a>
+                </div>
+            </div>
+            <div id="signupForm" style="display:none;">
+                <div class="auth-tabs">
+                    <div class="auth-tab" onclick="switchTab('login')">Login</div>
+                    <div class="auth-tab active">Sign Up</div>
+                </div>
+                <div class="auth-form">
+                    <h2>REGISTER</h2>
+                    <div class="row-inputs">
+                        <input type="text" id="regFirstName" class="auth-input" placeholder="First Name">
+                        <input type="text" id="regLastName" class="auth-input" placeholder="Last Name">
+                    </div>
+                    <input type="text" id="regUsername" class="auth-input" placeholder="Username">
+                    <input type="password" id="regPassword" class="auth-input" placeholder="Password">
+                    <p style="text-align:left; color:#888; margin-bottom:5px;">Security Question 1</p>
+                    <select id="regQ1" class="auth-input">
+                        <option>First pet's name?</option>
+                        <option>Favorite color?</option>
+                        <option>Birth city?</option>
+                    </select>
+                    <input type="text" id="regA1" class="auth-input" placeholder="Answer 1">
+                    <p style="text-align:left; color:#888; margin-bottom:5px;">Security Question 2</p>
+                    <select id="regQ2" class="auth-input">
+                        <option>Mother's maiden name?</option>
+                        <option>Favorite movie?</option>
+                        <option>First school?</option>
+                    </select>
+                    <input type="text" id="regA2" class="auth-input" placeholder="Answer 2">
+                    <button class="auth-btn green" onclick="registerUser()">Register</button>
+                </div>
+            </div>
+            <div id="forgotForm" style="display:none;">
+                <div class="auth-form">
+                    <h2 style="color:var(--accent-red)">RESET PASSWORD</h2>
+                    <div id="forgotStep1">
+                        <input type="text" id="forgotUsername" class="auth-input" placeholder="Enter Username">
+                        <button class="auth-btn" onclick="fetchSecurityQuestions()">Next</button>
+                        <a class="forgot-link" onclick="switchTab('login')">Back to Login</a>
+                    </div>
+                    <div id="forgotStep2" style="display:none;">
+                        <p id="labelQ1" style="text-align:left; color:var(--accent-blue);"></p>
+                        <input type="text" id="forgotA1" class="auth-input" placeholder="Answer 1">
+                        <p id="labelQ2" style="text-align:left; color:var(--accent-blue);"></p>
+                        <input type="text" id="forgotA2" class="auth-input" placeholder="Answer 2">
+                        <input type="password" id="newPass" class="auth-input" placeholder="New Password">
+                        <button class="auth-btn green" onclick="resetPassword()">Reset Password</button>
+                        <a class="forgot-link" onclick="switchTab('login')">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainAppSection">
+        <div class="container">
+            <div class="top-bar">
+                <div class="user-menu-container">
+                    <button class="user-menu-btn" onclick="toggleUserMenu()">⋮</button>
+                    <div id="userDropdown" class="user-dropdown">
+                        <a onclick="openSettings()">⚙️ Settings</a>
+                        <a onclick="confirmLogout()">🚪 Logout</a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pdfPage1">
+                <header>
+                    <div class="header-left">
+                        <div class="logo-container" onclick="location.reload()">
+                            <div class="css-logo-circle">H</div>
+                            <span class="app-name">Habi<span>Flow</span></span>
+                        </div>
+                        
+                        <div id="greetingDisplay" class="user-greeting"></div>
+                        <div class="month-nav">
+                            <button class="nav-btn hover-up" id="prevBtn" onclick="changeMonth(-1)">←</button>
+                            <h1 id="monthLabel"></h1>
+                            <button class="nav-btn hover-up" onclick="changeMonth(1)">→</button>
+                        </div>
+                    </div>
+                    <div id="dailyQuoteBox" class="quote-box">
+                        <div id="dailyQuoteText" class="quote-text">"Quote loading..."</div>
+                    </div>
+                </header>
+
+                <div class="stats-panel">
+                    <div class="stat-item">
+                        <div class="stat-label">Total Habits</div>
+                        <div id="totalHabits" class="stat-value">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Monthly Done</div>
+                        <div id="monthlyCompletedCount" class="stat-value">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Monthly Progress</div>
+                        <div class="progress-track"><div id="progressBar" class="progress-fill"></div></div>
+                        <div id="progressPerc" style="margin-top:5px; font-weight:bold;">0%</div>
+                    </div>
+                    <div class="daily-donut-container">
+                        <div class="single-chart">
+                            <svg viewBox="0 0 36 36" class="circular-chart">
+                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path id="summaryWheel" class="circle" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <text x="18" y="20.35" class="percentage-text" id="summaryPercText">0%</text>
+                            </svg>
+                        </div>
+                        <div class="daily-text-stats">
+                            <div class="stat-label" style="font-size: 0.7rem;">Daily Focus</div>
+                            <div class="daily-row">
+                                <span class="daily-lbl">Done:</span>
+                                <span class="daily-val"><span id="todayCompletedCount">0</span> (<span id="completedPercTextDisplay">0%</span>)</span>
+                            </div>
+                            <div class="daily-row">
+                                <span class="daily-lbl">Left:</span>
+                                <span class="daily-val" id="leftPercText">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group" data-html2canvas-ignore="true">
+                    <div class="input-wrapper">
+                        <input type="text" id="habitInput" placeholder="Enter habit name... (e.g. Gym 💪)">
+                        <button class="emoji-trigger-btn" onclick="toggleEmojiPicker()" title="Add Emoji">😊</button>
+                        <div id="emojiPicker" class="emoji-picker-container">
+                            </div>
+                    </div>
+
+                    <button class="btn-add hover-up" onclick="handleButtonClick(this, addHabit)">Add</button>
+                    <button class="btn-sec hover-up" onclick="handleButtonClick(this, openCopyModal)">📋 Copy</button>
+                    <button class="btn-sec hover-up" onclick="handleButtonClick(this, openStatsModal)">📊 Monthly Stats</button>
+                    <button class="btn-sec hover-up" onclick="downloadPDF()">📥 Download Data (PDF)</button>
+                    <button class="btn-sec btn-del-multi hover-up" onclick="handleButtonClick(this, openDeleteModal)">🗑️ Delete Habit </button>
+                </div>
+
+                <div class="table-container">
+                    <table><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table>
+                </div>
+
+                <div id="dailyOverviewSection" class="daily-overview-card"></div>
+                <div id="weekwiseContainer"></div>
+                <div id="lineGraphContainer" class="line-graph-section"></div>
+            </div>
+            <div id="monthlyGraphContainer" class="monthly-graph-container"></div>
+            <div id="detailedReportContainer">
+                <h2 style="text-align:center; color:white; margin-bottom:20px; font-size:1.8rem; text-transform:uppercase; letter-spacing:2px;">Habit Performance Report</h2>
+                <div style="text-align:center; color:#8b949e; margin-bottom:30px; font-size:1rem;" id="reportDateRange"></div>
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th style="width:15%">Performance Rating</th>
+                            <th style="width:25%">Habits</th>
+                            <th style="width:20%">Weekly habits progress</th>
+                            <th style="width:20%">Monthly Habit progress</th>
+                            <th style="width:20%">3 monthly habit progress</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="habitDetailModal" class="modal">
+        <div class="modal-content" style="text-align: center;">
+            <h2 style="margin-top:0; color:var(--accent-blue);">Full Habit Name</h2>
+            <div id="fullHabitText" style="color:var(--text-white); font-size:1.2rem; margin: 20px 0; word-wrap: break-word; line-height: 1.5;"></div>
+            <button class="btn-add hover-up" style="padding: 10px 40px;" onclick="closeModal('habitDetailModal')">Close</button>
+        </div>
+    </div>
+
+    <div id="copyModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-top:0;">Copy Habits</h2>
+            <div id="modalList" style="max-height: 300px; overflow-y: auto;"></div>
+            <div style="display:flex; justify-content:flex-end; gap:20px; margin-top:20px;">
+                <button class="nav-btn hover-up" style="width: auto; padding: 0 15px;" onclick="closeModal('copyModal')">Cancel</button>
+                <button class="btn-add hover-up" style="padding: 0 25px; height: 40px;" onclick="confirmCopy()">Copy Selected</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-top:0; color:var(--accent-red);">Delete Habits</h2>
+            <p style="color:var(--text-gray); font-size:0.9rem;">Select habits to remove from this month:</p>
+            <div id="deleteList" style="max-height: 300px; overflow-y: auto; background:var(--input-bg); border-radius:8px; border:1px solid var(--border); margin:15px 0;"></div>
+            <div style="display:flex; justify-content:flex-end; gap:20px; margin-top:20px;">
+                <button class="nav-btn hover-up" style="width: auto; padding: 0 15px;" onclick="closeModal('deleteModal')">Cancel</button>
+                <button class="btn-add hover-up" style="background:var(--accent-red); padding: 0 25px; height: 40px;" onclick="executeBulkDelete()">Delete Selected</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="statsModal" class="modal">
+        <div class="modal-content stats-modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                <h2 style="margin:0">Monthly Statistics</h2>
+                <span style="cursor:pointer; font-size:1.5rem;" onclick="closeModal('statsModal')">×</span>
+            </div>
+            <div class="stats-cards-grid">
+                <div class="stat-detail-card"><div class="stat-card-label">COMPLETION RATE</div><div id="rateVal" class="stat-card-value">0%</div></div>
+                <div class="stat-detail-card"><div class="stat-card-label">TOTAL COMPLETED</div><div id="totalVal" class="stat-card-value">0</div></div>
+                <div class="stat-detail-card"><div class="stat-card-label">CURRENT STREAK</div><div id="currStreak" class="stat-card-value">0 days</div></div>
+                <div class="stat-detail-card"><div class="stat-card-label">LONGEST STREAK</div><div id="longStreak" class="stat-card-value">0 days</div></div>
+                <div class="stat-detail-card"><div class="stat-card-label">BEST DAY</div><div id="bestDay" class="stat-card-value">0%</div></div>
+                <div class="stat-detail-card"><div class="stat-card-label">HABITS TRACKED</div><div id="trackedCount" class="stat-card-value">0</div></div>
+            </div>
+            <h3 id="overviewTitle">Yearly Overview</h3>
+            <div class="yearly-months-grid" id="yearlyGrid"></div>
+            <button class="btn-close hover-up" onclick="closeModal('statsModal')">Close</button>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal">
+        <div class="modal-content settings-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 style="margin:0">⚙️ Settings</h2>
+                <span style="cursor:pointer; font-size:1.5rem;" onclick="closeModal('settingsModal')">×</span>
+            </div>
+            
+            <div class="profile-pic-placeholder">👤</div>
+
+            <div class="settings-section">
+                <div class="settings-title">2. Profile Settings</div>
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="setFullName" class="settings-input" placeholder="Your Name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="setUsername" class="settings-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email (Optional)</label>
+                    <input type="text" id="setEmail" class="settings-input" placeholder="example@mail.com">
+                </div>
+                <button class="btn-add hover-up" style="width:100%; height:40px; margin-top:5px;" onclick="saveProfile()">Save Profile</button>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-title">Security</div>
+                <button class="settings-btn" onclick="openModal('changePasswordModal')">
+                    <span>🔑 Change Password</span>
+                    <span>></span>
+                </button>
+                <button class="settings-btn" onclick="openModal('changeSecurityModal')">
+                    <span>❓ Change Security Questions</span>
+                    <span>></span>
+                </button>
+            </div>
+
+            <button class="btn-sec hover-up" style="width:100%; color:var(--accent-red); border-color:var(--accent-red);" onclick="confirmLogout()">
+                🚪 Logout
+            </button>
+        </div>
+    </div>
+
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content settings-content">
+            <h2 style="margin-top:0;">Change Password</h2>
+            <div class="form-group">
+                <label class="form-label">Current Password</label>
+                <input type="password" id="cpCurrent" class="settings-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">New Password</label>
+                <input type="password" id="cpNew" class="settings-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Confirm New Password</label>
+                <input type="password" id="cpConfirm" class="settings-input">
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button class="nav-btn" onclick="closeModal('changePasswordModal')" style="width:auto; padding:0 15px;">Cancel</button>
+                <button class="btn-add" onclick="updatePassword()">Update</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="changeSecurityModal" class="modal">
+        <div class="modal-content settings-content">
+            <h2 style="margin-top:0;">Update Security Questions</h2>
+            <div class="form-group">
+                <label class="form-label">Current Password (Verify)</label>
+                <input type="password" id="csqPass" class="settings-input">
+            </div>
+            
+            <hr style="border:0; border-top:1px solid var(--border); margin:15px 0;">
+
+            <p style="text-align:left; color:#888; margin-bottom:5px;">Security Question 1</p>
+            <select id="csqQ1" class="settings-input" style="margin-bottom:10px;">
+                <option>First pet's name?</option>
+                <option>Favorite color?</option>
+                <option>Birth city?</option>
+            </select>
+            <input type="text" id="csqA1" class="settings-input" placeholder="Answer 1">
+            
+            <p style="text-align:left; color:#888; margin-bottom:5px; margin-top:10px;">Security Question 2</p>
+            <select id="csqQ2" class="settings-input" style="margin-bottom:10px;">
+                <option>Mother's maiden name?</option>
+                <option>Favorite movie?</option>
+                <option>First school?</option>
+            </select>
+            <input type="text" id="csqA2" class="settings-input" placeholder="Answer 2">
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button class="nav-btn" onclick="closeModal('changeSecurityModal')" style="width:auto; padding:0 15px;">Cancel</button>
+                <button class="btn-add" onclick="updateSecurityQuestions()">Update</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // --- QUOTES ARRAY ---
+    const quotes = [
+        "Your life changes the moment you decide to change yourself.",
+        "Small steps every day create big results over time.",
+        "Don’t wait for motivation. Build discipline.",
+        "You are one decision away from a completely different life.",
+        "Growth begins when excuses end.",
+        "Rebuild yourself quietly. Let success make the noise.",
+        "Every day is a new chance to become better.",
+        "Pain is temporary, quitting lasts forever.",
+        "Your future needs you. Don’t give up.",
+        "Consistency beats talent when talent quits.",
+        "Stop doubting yourself. You are capable of more.",
+        "Become addicted to self-improvement.",
+        "Change your habits, change your life.",
+        "You didn’t come this far to stop now.",
+        "Discipline today gives freedom tomorrow.",
+        "One good habit can rewrite your entire story.",
+        "Rebuilding yourself is hard, staying broken is harder.",
+        "Focus on progress, not perfection.",
+        "You owe your future self a better version of you.",
+        "Don’t quit. You’re closer than you think.",
+        "Life rewards those who don’t give up.",
+        "Your mindset decides your direction.",
+        "Every strong person was once weak but didn’t quit.",
+        "Become someone your past self would be proud of.",
+        "Wake up with purpose, sleep with satisfaction.",
+        "Hard days build strong minds.",
+        "Success is built in silence, not excuses.",
+        "Fall seven times, stand up eight.",
+        "The best investment is working on yourself.",
+        "Keep going. Your story isn’t finished yet.",
+        "You are rebuilding — trust the process.",
+        "Today’s effort is tomorrow’s confidence.",
+        "Change begins with a single habit.",
+        "Be patient with yourself, but never stop.",
+        "Your comfort zone is stealing your future.",
+        "Discipline is choosing what you want most over what you want now.",
+        "No one can stop you except you.",
+        "Every day you don’t quit, you win.",
+        "Turn pain into power.",
+        "Your habits shape your destiny.",
+        "Don’t wait for the perfect moment. Create it.",
+        "A focused mind can change a life.",
+        "You grow when you choose effort over excuses.",
+        "Becoming better is a daily choice.",
+        "You are rebuilding — and that takes courage.",
+        "Consistency today builds confidence tomorrow.",
+        "Your struggle is proof that you are trying.",
+        "Progress, not excuses. Always.",
+        "Keep showing up, even on hard days.",
+        "Never give up on the life you want to build."
+    ];
+
+    // --- CHECK SESSION ON LOAD ---
+    document.addEventListener("DOMContentLoaded", checkSession);
+
+    async function checkSession() {
+        try {
+            const res = await fetch('/api/check_session');
+            const data = await res.json();
+
+            if (data.is_logged_in) {
+                // If logged in, skip login screen directly
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('mainAppSection').style.display = 'block';
+                
+                // Populate Profile Data
+                document.getElementById('setFullName').value = data.first_name;
+                document.getElementById('setUsername').value = data.username;
+                document.getElementById('setEmail').value = data.email;
+
+                // Load App
+                initAppWithDB(data.first_name);
+            } else {
+                // If not logged in, show login screen
+                document.getElementById('authSection').style.display = 'flex';
+                document.getElementById('mainAppSection').style.display = 'none';
+            }
+        } catch (error) {
+            console.error("Session check failed", error);
+        }
+    }
+
+    // --- AUTHENTICATION LOGIC ---
+
+    function switchTab(tab) {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('signupForm').style.display = 'none';
+        document.getElementById('forgotForm').style.display = 'none';
+        
+        if(tab === 'login') document.getElementById('loginForm').style.display = 'block';
+        if(tab === 'signup') document.getElementById('signupForm').style.display = 'block';
+        if(tab === 'forgot') {
+            document.getElementById('forgotForm').style.display = 'block';
+            document.getElementById('forgotStep1').style.display = 'block';
+            document.getElementById('forgotStep2').style.display = 'none';
+        }
+    }
+
+    async function registerUser() {
+        const first = document.getElementById('regFirstName').value;
+        const last = document.getElementById('regLastName').value;
+        const user = document.getElementById('regUsername').value;
+        const pass = document.getElementById('regPassword').value;
+        const q1 = document.getElementById('regQ1').value;
+        const a1 = document.getElementById('regA1').value;
+        const q2 = document.getElementById('regQ2').value;
+        const a2 = document.getElementById('regA2').value;
+
+        if(!user || !pass || !a1 || !a2) { alert('Please fill all fields'); return; }
+
+        const res = await fetch('/api/signup', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ first_name: first, last_name: last, username: user, password: pass, q1, a1, q2, a2 })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if(data.success) switchTab('login');
+    }
+
+    async function loginUser() {
+        const user = document.getElementById('loginUsername').value;
+        const pass = document.getElementById('loginPassword').value;
+
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ username: user, password: pass })
+        });
+        const data = await res.json();
+        
+        if(data.success) {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('mainAppSection').style.display = 'block';
+            
+            // Set settings data
+            document.getElementById('setFullName').value = data.first_name; 
+            document.getElementById('setUsername').value = user;
+
+            initAppWithDB(data.first_name); 
+        } else {
+            alert(data.message);
+        }
+    }
+
+    async function fetchSecurityQuestions() {
+        const user = document.getElementById('forgotUsername').value;
+        if(!user) return alert('Enter username');
+
+        const res = await fetch('/api/get_security_questions', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ username: user })
+        });
+        const data = await res.json();
+        
+        if(data.success) {
+            document.getElementById('labelQ1').innerText = data.q1;
+            document.getElementById('labelQ2').innerText = data.q2;
+            document.getElementById('forgotStep1').style.display = 'none';
+            document.getElementById('forgotStep2').style.display = 'block';
+        } else {
+            alert(data.message);
+        }
+    }
+
+    async function resetPassword() {
+        const user = document.getElementById('forgotUsername').value;
+        const a1 = document.getElementById('forgotA1').value;
+        const a2 = document.getElementById('forgotA2').value;
+        const newPass = document.getElementById('newPass').value;
+
+        const res = await fetch('/api/reset_password', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ username: user, a1, a2, new_password: newPass })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if(data.success) switchTab('login');
+    }
+
+    // --- NEW LOGOUT & SETTINGS LOGIC ---
+    
+    function toggleUserMenu() {
+        const dd = document.getElementById("userDropdown");
+        dd.classList.toggle("show");
+    }
+
+    window.onclick = function(event) {
+        if (!event.target.matches('.user-menu-btn')) {
+            const dropdowns = document.getElementsByClassName("user-dropdown");
+            for (let i = 0; i < dropdowns.length; i++) {
+                const openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = "none";
+        }
+    }
+
+    function confirmLogout() {
+        if(confirm("Are you sure you want to logout?")) {
+            logoutUser();
+        }
+    }
+
+    async function logoutUser() {
+        await fetch('/api/logout');
+        location.reload();
+    }
+
+    function openSettings() {
+        document.getElementById('settingsModal').style.display = 'flex';
+        document.getElementById("userDropdown").classList.remove("show");
+    }
+
+    function openModal(id) {
+        document.getElementById(id).style.display = 'flex';
+    }
+
+    function toggleTheme() {
+        const body = document.body;
+        body.classList.toggle('light-mode');
+        const isLight = body.classList.contains('light-mode');
+        
+        const btnText = document.getElementById('themeText');
+        const btnIcon = document.getElementById('themeIcon');
+        
+        if(isLight) {
+            btnText.innerText = "Switch to Dark Mode";
+            btnIcon.innerText = "☀️";
+        } else {
+            btnText.innerText = "Switch to Light Mode";
+            btnIcon.innerText = "🌙";
+        }
+    }
+
+    // --- UPDATED SAVE PROFILE FUNCTION ---
+    async function saveProfile() {
+        const newName = document.getElementById('setFullName').value;
+        const email = document.getElementById('setEmail').value;
+        
+        // Backend call to save profile
+        const res = await fetch('/api/update_profile', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ full_name: newName, email: email })
+        });
+        
+        const data = await res.json();
+        
+        if(data.success) {
+            document.getElementById('greetingDisplay').innerText = `Welcome Back, ${newName}!`;
+            alert(data.message);
+        } else {
+            alert("Error updating profile.");
+        }
+    }
+
+    // --- NEW UPDATE FUNCTIONS ---
+
+    async function updatePassword() {
+        const currentPass = document.getElementById('cpCurrent').value;
+        const newPass = document.getElementById('cpNew').value;
+        const confirmPass = document.getElementById('cpConfirm').value;
+
+        if(!currentPass || !newPass || !confirmPass) {
+            alert("Please fill all fields.");
+            return;
+        }
+        if(newPass !== confirmPass) {
+            alert("New passwords do not match!");
+            return;
+        }
+
+        // NOTE: This requires backend implementation of /api/change_password
+        const res = await fetch('/api/change_password', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ current_password: currentPass, new_password: newPass })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if(data.success) {
+            closeModal('changePasswordModal');
+            // Clear fields
+            document.getElementById('cpCurrent').value = '';
+            document.getElementById('cpNew').value = '';
+            document.getElementById('cpConfirm').value = '';
+        }
+    }
+
+    async function updateSecurityQuestions() {
+        const password = document.getElementById('csqPass').value;
+        const q1 = document.getElementById('csqQ1').value;
+        const a1 = document.getElementById('csqA1').value;
+        const q2 = document.getElementById('csqQ2').value;
+        const a2 = document.getElementById('csqA2').value;
+
+        if(!password || !a1 || !a2) {
+            alert("Please fill all fields and verify password.");
+            return;
+        }
+
+        // NOTE: This requires backend implementation of /api/update_security_questions
+        const res = await fetch('/api/update_security_questions', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ password: password, q1, a1, q2, a2 })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if(data.success) {
+            closeModal('changeSecurityModal');
+            document.getElementById('csqPass').value = '';
+            document.getElementById('csqA1').value = '';
+            document.getElementById('csqA2').value = '';
+        }
+    }
+
+
+    // --- MAIN APP LOGIC ---
+
+    // --- REPORT GENERATION LOGIC ---
+    function generateReportHTML() {
+        const monthKey = getMonthKey(currentDate);
+        const habits = allData[monthKey] || [];
+        const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+        
+        document.getElementById('reportDateRange').innerText = `Report for: ${currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}`;
+
+        const categories = {
+            'Excellent': { habits: [], color: 'var(--accent-green)', range: '80-100%' },
+            'Good': { habits: [], color: 'var(--accent-blue)', range: '60-79%' },
+            'Average': { habits: [], color: 'var(--accent-yellow)', range: '30-59%' },
+            'Bad': { habits: [], color: 'var(--accent-red)', range: '0-29%' }
+        };
+
+        const todayDate = new Date().getDate();
+        let weekStart = Math.floor((todayDate - 1) / 7) * 7 + 1;
+        let weekEnd = Math.min(weekStart + 6, daysInMonth);
+        let weekDaysCount = (weekEnd - weekStart) + 1;
+
+        habits.forEach(h => {
+            let monthlyDone = 0;
+            if(h.history) {
+                 Object.keys(h.history).forEach(k => { if(h.history[k]) monthlyDone++; });
+            }
+            let monthlyPerc = Math.round((monthlyDone / daysInMonth) * 100);
+
+            let weeklyDone = 0;
+            for(let i=weekStart; i<=weekEnd; i++) {
+                if(h.history && h.history[`d${i}`]) weeklyDone++;
+            }
+            let weeklyPerc = Math.round((weeklyDone / weekDaysCount) * 100);
+
+            let threeMonthDone = 0;
+            let threeMonthTotalDays = 0;
+
+            for (let m = 0; m < 3; m++) {
+                let d = new Date(currentDate.getFullYear(), currentDate.getMonth() - m, 1);
+                let mKey = getMonthKey(d);
+                let mDays = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+                
+                if (allData[mKey]) {
+                    let hFound = allData[mKey].find(item => item.name === h.name);
+                    if (hFound) {
+                        threeMonthTotalDays += mDays;
+                        if (hFound.history) {
+                            Object.values(hFound.history).forEach(val => { if(val) threeMonthDone++; });
+                        }
+                    }
+                }
+            }
+            
+            let threeMonthPerc = threeMonthTotalDays > 0 
+                ? Math.round((threeMonthDone / threeMonthTotalDays) * 100) 
+                : 0;
+
+            const habitObj = { name: h.name, mPerc: monthlyPerc, wPerc: weeklyPerc, tPerc: threeMonthPerc };
+
+            if(monthlyPerc >= 80) categories['Excellent'].habits.push(habitObj);
+            else if(monthlyPerc >= 60) categories['Good'].habits.push(habitObj);
+            else if(monthlyPerc >= 30) categories['Average'].habits.push(habitObj);
+            else categories['Bad'].habits.push(habitObj);
+        });
+
+        const tbody = document.getElementById('reportTableBody');
+        tbody.innerHTML = '';
+
+        ['Excellent', 'Good', 'Average', 'Bad'].forEach(cat => {
+            const data = categories[cat];
+            if (data.habits.length === 0) return;
+
+            let avgWeekly = 0, avgMonthly = 0, avg3Month = 0;
+            data.habits.forEach(h => {
+                avgWeekly += h.wPerc;
+                avgMonthly += h.mPerc;
+                avg3Month += h.tPerc;
+            });
+            avgWeekly = Math.round(avgWeekly / data.habits.length);
+            avgMonthly = Math.round(avgMonthly / data.habits.length);
+            avg3Month = Math.round(avg3Month / data.habits.length);
+
+            let habitListHTML = data.habits.map(h => `<span class="habit-list-item">${h.name}</span>`).join('');
+
+            const makeBar = (perc, color) => `
+                <div class="pdf-progress-container">
+                    <div class="pdf-progress-label">${perc}%</div>
+                    <div class="pdf-progress-track" style="border-color:${color}">
+                        <div class="pdf-progress-fill" style="width:${perc}%; background:${color}"></div>
+                    </div>
+                </div>
+            `;
+
+            const row = `
+                <tr class="cat-row cat-${cat.toLowerCase()}">
+                    <td style="font-weight:bold; font-size:1.1rem; color:${data.color}; border-right:2px solid var(--border);">${cat}</td>
+                    <td style="border-right:1px solid var(--border);">${habitListHTML}</td>
+                    <td>${makeBar(avgWeekly, data.color)}</td>
+                    <td>${makeBar(avgMonthly, data.color)}</td>
+                    <td>${makeBar(avg3Month, data.color)}</td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+    }
+
+    async function downloadPDF() {
+        generateReportHTML();
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = 210;
+        const reportEl = document.getElementById('detailedReportContainer');
+        reportEl.style.position = 'static'; 
+        reportEl.style.left = '0';
+        reportEl.style.width = '1200px'; 
+
+        const canvas = await html2canvas(reportEl, { 
+            scale: 1.5,
+            useCORS: true, 
+            backgroundColor: '#161b22',
+            windowWidth: 1200 
+        });
+        
+        reportEl.style.position = 'absolute';
+        reportEl.style.left = '-9999px';
+        reportEl.style.width = '100%';
+
+        const imgData = canvas.toDataURL('image/png');
+        const imgHeight = canvas.height * pdfWidth / canvas.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
+        pdf.save('Habit_Performance_Report.pdf');
+    }
+
+    let currentDate = new Date(); 
+    let currentWeekIndex = 0;
+    let allData = {}; // Initialize empty, will load from DB
+    const weekdaysShort = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+    const weekdaysFull = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+    function getMonthKey(date) { return `${date.getFullYear()}-${date.getMonth()}`; }
+
+    // --- REPLACED LOCALSTORAGE INIT WITH DB INIT ---
+    async function initAppWithDB(firstName) { 
+        document.getElementById('greetingDisplay').innerText = `Welcome Back, ${firstName}!`;
+        document.getElementById('habitInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') addHabit(); });
+        
+        // Load Data from Server
+        const res = await fetch('/api/get_data');
+        allData = await res.json();
+        
+        jumpToCurrentWeek(); 
+        render(); 
+        updateDailyQuote(); // Load the quote
+    }
+
+    // --- DAILY QUOTE LOGIC ---
+    function updateDailyQuote() {
+        const today = new Date();
+        const start = new Date(today.getFullYear(), 0, 0);
+        const diff = today - start;
+        const oneDay = 1000 * 60 * 60 * 24;
+        const dayOfYear = Math.floor(diff / oneDay);
+        
+        // Use modulo to cycle through quotes (Day 51 will use quote[1])
+        const quoteIndex = dayOfYear % quotes.length;
+        document.getElementById('dailyQuoteText').innerText = `"${quotes[quoteIndex]}"`;
+    }
+
+    function jumpToCurrentWeek() {
+        const today = new Date();
+        if (currentDate.getMonth() === today.getMonth() && currentDate.getFullYear() === today.getFullYear()) {
+            const dayOfMonth = today.getDate();
+            currentWeekIndex = Math.floor((dayOfMonth - 1) / 7);
+        } else {
+            currentWeekIndex = 0; 
+        }
+    }
+
+    function handleButtonClick(btn, actionFunc) {
+        btn.classList.add('shake-active');
+        setTimeout(() => { btn.classList.remove('shake-active'); }, 300);
+        actionFunc();
+    }
+
+    function render() {
+        const monthKey = getMonthKey(currentDate);
+        document.getElementById('monthLabel').innerText = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+        
+        const prevBtn = document.getElementById('prevBtn');
+        if (currentDate.getFullYear() < 2025 || (currentDate.getFullYear() === 2025 && currentDate.getMonth() <= 11)) {
+             prevBtn.disabled = true;
+        } else {
+             prevBtn.disabled = false;
+        }
+        
+        if (!allData[monthKey]) allData[monthKey] = [];
+        
+        renderTable();
+        renderDailyOverview(); 
+        renderWeekCards();
+        renderLineGraph(); 
+        renderMonthlyGraph(); 
+        updateStats();
+        updateDailyProgress(); 
+    }
+
+    function renderDailyOverview() {
+        const monthKey = getMonthKey(currentDate);
+        const habits = allData[monthKey] || [];
+        const today = currentDate.getDate();
+        const dayOfWeek = weekdaysFull[currentDate.getDay()];
+        const fullDateString = `${dayOfWeek}, ${today} ${currentDate.toLocaleString('default', { month: 'long' })}`;
+        
+        const totalHabits = habits.length;
+        const doneCount = habits.filter(h => h.history && h.history[`d${today}`]).length;
+        const perc = totalHabits > 0 ? Math.round((doneCount / totalHabits) * 100) : 0;
+        
+        let message = "Let's get started!";
+        if(perc === 100) message = "All done for today! 🎉";
+        else if(perc >= 50) message = "Halfway there, keep going! 🚀";
+        else if(perc > 0) message = "Good start! 💪";
+
+        const container = document.getElementById('dailyOverviewSection');
+        container.innerHTML = `
+            <div class="daily-info">
+                <h2>Today's Overview</h2>
+                <div class="daily-date">${fullDateString}</div>
+                <div class="daily-message">${message}</div>
+            </div>
+            <div class="daily-progress-container">
+                <div class="dp-labels">
+                    <span>Progress</span>
+                    <span>${doneCount}/${totalHabits} (${perc}%)</span>
+                </div>
+                <div class="dp-track">
+                    <div class="dp-fill" style="width: ${perc}%;"></div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderLineGraph() {
+        const monthKey = getMonthKey(currentDate);
+        const habits = allData[monthKey] || [];
+        const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+        const container = document.getElementById('lineGraphContainer');
+        const totalHabits = habits.length;
+
+        const points = [];
+        for(let i=1; i<=daysInMonth; i++) {
+            const done = habits.filter(h => h.history && h.history[`d${i}`]).length;
+            const perc = totalHabits > 0 ? Math.round((done / totalHabits) * 100) : 0;
+            points.push({ day: i, perc: perc });
+        }
+
+        const width = 1000;
+        const height = 250;
+        let pathD = "";
+        const stepX = width / (daysInMonth - 1);
+        const coordinates = points.map((p, index) => {
+            const x = index * stepX;
+            const y = height - (p.perc * height / 100);
+            return {x, y, perc: p.perc};
+        });
+
+        if(coordinates.length > 0) {
+            pathD = `M ${coordinates[0].x} ${coordinates[0].y}`;
+            coordinates.forEach((p, i) => {
+                if(i > 0) pathD += ` L ${p.x} ${p.y}`;
+            });
+        }
+
+        const areaD = pathD + ` L ${width} ${height} L 0 ${height} Z`;
+        let dotsHtml = "";
+        coordinates.forEach(p => {
+             dotsHtml += `<circle cx="${p.x}" cy="${p.y}" class="chart-dot"><title>Day: ${p.day}, ${p.perc}%</title></circle>`;
+        });
+
+        let gridHtml = "";
+        [0, 25, 50, 75, 100].forEach(val => {
+            const yPos = height - (val * height / 100);
+            gridHtml += `<line x1="0" y1="${yPos}" x2="${width}" y2="${yPos}" class="grid-line" />`;
+        });
+
+        let labelsHtml = "";
+        [0, 25, 50, 75, 100].forEach(val => {
+            const topPos = 250 - (val * 2.5); 
+            const styleTop = `top: ${topPos - 6}px;`; 
+            labelsHtml += `<div class="y-axis-label" style="${styleTop}">${val}%</div>`;
+        });
+
+        container.innerHTML = `
+            <div class="lg-header"> MONTHLY PROGRESS BY GRAPH</div>
+            <div class="graph-svg-container">
+                <svg viewBox="0 -10 ${width} ${height + 20}" preserveAspectRatio="none" style="width:100%; height:100%; overflow:visible;">
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--accent-green); stop-opacity:0.5" />
+                            <stop offset="100%" style="stop-color:var(--accent-green); stop-opacity:0" />
+                        </linearGradient>
+                    </defs>
+                    ${gridHtml}
+                    <path d="${areaD}" class="chart-area" />
+                    <path d="${pathD}" class="chart-line" />
+                    ${dotsHtml}
+                </svg>
+                ${labelsHtml}
+            </div>
+        `;
+    }
+
+    function renderMonthlyGraph() {
+        const monthKey = getMonthKey(currentDate);
+        const habits = allData[monthKey] || [];
+        const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+        const container = document.getElementById('monthlyGraphContainer');
+        const totalHabits = habits.length;
+
+        const weeks = [];
+        let tempWeek = [];
+        for (let i = 1; i <= daysInMonth; i++) {
+            tempWeek.push(i);
+            if (tempWeek.length === 7 || i === daysInMonth) {
+                weeks.push(tempWeek);
+                tempWeek = [];
+            }
+        }
+
+        let barsHtml = '';
+        weeks.forEach((weekDays, idx) => {
+            let weekDone = 0;
+            let weekPossible = totalHabits * weekDays.length;
+            weekDays.forEach(day => {
+                weekDone += habits.filter(h => h.history && h.history[`d${day}`]).length;
+            });
+            const perc = weekPossible > 0 ? Math.round((weekDone / weekPossible) * 100) : 0;
+            barsHtml += `
+                <div class="mg-col">
+                    <span class="mg-stats">${perc}%</span>
+                    <div class="mg-track">
+                        <div class="mg-fill" style="height: ${perc}%;"></div>
+                    </div>
+                    <span class="mg-label">Week ${idx + 1}</span>
+                </div>
+            `;
+        });
+
+        container.innerHTML = `
+            <div class="wg-header">
+                <span class="wg-title">MONTHLY OVERVIEW</span>
+                <span>${currentDate.toLocaleString('default', { month: 'long' })}</span>
+            </div>
+            <div class="mg-bars">${barsHtml}</div>
+        `;
+    }
+
+    function updateDailyProgress() {
+        const monthKey = getMonthKey(currentDate);
+        const habits = allData[monthKey] || [];
+        const today = currentDate.getDate();
+        const totalHabits = habits.length;
+        const completedToday = habits.filter(h => h.history && h.history[`d${today}`]).length;
+        const completedPerc = totalHabits > 0 ? (completedToday / totalHabits) * 100 : 0;
+        
+        const circleLength = 100;
+        const strokeOffset = circleLength - (circleLength * completedPerc) / 100;
+        const wheel = document.getElementById("summaryWheel");
+        if(wheel) {
+            wheel.style.strokeDasharray = `${circleLength}, ${circleLength}`;
+            wheel.style.strokeDashoffset = strokeOffset;
+        }
+        
+        document.getElementById("summaryPercText").innerText = completedPerc.toFixed(0) + "%";
+        document.getElementById("todayCompletedCount").innerText = completedToday;
+        const doneTextDisplay = document.getElementById("completedPercTextDisplay");
+        if(doneTextDisplay) doneTextDisplay.innerText = completedPerc.toFixed(0) + "%";
+        document.getElementById("leftPercText").innerText = (100 - completedPerc).toFixed(0) + "%";
+    }
+
+    function toggle(hIdx, day) {
+        const targetDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+        const today = new Date();
+        targetDate.setHours(0,0,0,0);
+        today.setHours(0,0,0,0);
+
+        if (targetDate < today) {
+            alert("Restricted: You cannot check yesterday's habit.");
+            render(); 
+            return;
+        }
+
+        const monthKey = getMonthKey(currentDate);
+        const dayKey = `d${day}`;
+        if (!allData[monthKey][hIdx].history) allData[monthKey][hIdx].history = {};
+        allData[monthKey][hIdx].history[dayKey] = !allData[monthKey][hIdx].history[dayKey];
+        save();
+        updateDailyProgress(); 
+    }
+
+    function renameHabit(i) {
+        const monthKey = getMonthKey(currentDate);
+        const currentName = allData[monthKey][i].name;
+        const newName = prompt("Rename habit:", currentName);
+        if (newName && newName.trim() !== "") {
+            allData[monthKey][i].name = newName.trim();
+            save();
+        }
+    }
+    
+    function deleteHabit(i) {
+        const monthKey = getMonthKey(currentDate);
+        if(confirm("Delete this habit?")) { 
+            allData[monthKey].splice(i, 1); 
+            save(); 
+        }
+    }
+
+    function openHabitDetail(name) {
+        document.getElementById('fullHabitText').innerText = name;
+        document.getElementById('habitDetailModal').style.display = 'flex';
+    }
+
+    function renderTable() {
+        const monthKey = getMonthKey(currentDate);
+        const habits = allData[monthKey];
+        const days = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+        const head = document.getElementById('tableHead');
+        const body = document.getElementById('tableBody');
+        
+        const realTodayDate = new Date();
+        realTodayDate.setHours(0,0,0,0); 
+        const realToday = realTodayDate.getDate();
+        const realMonth = realTodayDate.getMonth();
+        const realYear = realTodayDate.getFullYear();
+        const startDateLimit = new Date(2025, 11, 25);
+        startDateLimit.setHours(0,0,0,0);
+
+        let weekRowHtml = `<tr><th rowspan="2" class="habit-col-header">My Habits</th>`;
+        let daysLeft = days;
+        let weekNum = 1;
+        while(daysLeft > 0) {
+            let span = daysLeft >= 7 ? 7 : daysLeft;
+            weekRowHtml += `<th colspan="${span}" class="week-header">Week ${weekNum}</th>`;
+            daysLeft -= span;
+            weekNum++;
+        }
+        weekRowHtml += `</tr><tr>`;
+        for(let i=1; i<=days; i++) {
+            const d = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
+            const isTodayHeader = (currentDate.getFullYear() === realYear && currentDate.getMonth() === realMonth && i === realToday);
+            const colorStyle = isTodayHeader ? 'color: var(--accent-blue);' : '';
+            weekRowHtml += `<th style="${colorStyle}"><div>${weekdaysShort[d.getDay()]}</div>${i}</th>`;
+        }
+        weekRowHtml += `</tr>`;
+        head.innerHTML = weekRowHtml;
+
+        body.innerHTML = '';
+        habits.forEach((h, hIdx) => {
+            let row = `<tr>
+                <td>
+                    <div class="habit-container">
+                        <div class="left-action-zone">
+                            <span class="menu-dots" onclick="openHabitDetail('${h.name.replace(/'/g, "\\'")}')">⋮</span>
+                            <div class="action-btns">
+                                <span class="edit-icon" onclick="renameHabit(${hIdx})" title="Rename">✎</span>
+                                <span class="del-icon" onclick="deleteHabit(${hIdx})" title="Delete">✕</span>
+                            </div>
+                        </div>
+                        <div class="habit-name-text" onclick="openHabitDetail('${h.name.replace(/'/g, "\\'")}')">${h.name}</div>
+                    </div>
+                </td>`;
+            
+            for(let i=1; i<=days; i++) {
+                const dayKey = `d${i}`;
+                const checked = h.history && h.history[dayKey] ? 'checked' : '';
+                const cellDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
+                cellDate.setHours(0,0,0,0);
+                let statusClass = '';
+                if (!checked) {
+                    if (cellDate.getTime() === realTodayDate.getTime()) statusClass = 'missed-today';
+                    else if (cellDate.getTime() < realTodayDate.getTime() && cellDate.getTime() >= startDateLimit.getTime()) statusClass = 'missed-past';
+                }
+                row += `<td><input type="checkbox" class="check-box ${statusClass}" onclick="toggle(${hIdx}, ${i})" ${checked}></td>`;
+            }
+            body.innerHTML += row + '</tr>';
+        });
+    }
+
+    function renderWeekCards() {
+        const monthKey = getMonthKey(currentDate);
+        const habits = allData[monthKey] || [];
+        const totalHabitsCount = habits.length;
+        const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+        const container = document.getElementById('weekwiseContainer');
+        const weeks = [];
+        let tempWeek = [];
+        for (let i = 1; i <= daysInMonth; i++) {
+            tempWeek.push(i);
+            if (tempWeek.length === 7 || i === daysInMonth) {
+                weeks.push(tempWeek);
+                tempWeek = [];
+            }
+        }
+        if (currentWeekIndex >= weeks.length) currentWeekIndex = weeks.length - 1;
+        const currentWeekDays = weeks[currentWeekIndex];
+        
+        let html = `
+            <div class="week-cards-header">
+                <div class="week-cards-title">Week Performance</div>
+                <div class="week-nav-pills">
+        `;
+        weeks.forEach((_, idx) => {
+            const activeClass = idx === currentWeekIndex ? 'active' : '';
+            html += `<button class="week-pill ${activeClass}" onclick="setWeek(${idx})">Week ${idx + 1}</button>`;
+        });
+        html += ` </div></div>`;
+
+        let totalWeekDone = 0;
+        let totalWeekPossible = totalHabitsCount * currentWeekDays.length;
+        let barsHtml = '';
+        currentWeekDays.forEach(dayNum => {
+            const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum);
+            const stats = getDayStats(monthKey, dayNum);
+            totalWeekDone += stats.done;
+            barsHtml += `
+                <div class="wg-col">
+                    <div class="wg-stats-top">
+                        <span class="wg-count">${stats.done}/${totalHabitsCount}</span>
+                        <span class="wg-perc">${stats.perc}%</span>
+                    </div>
+                    <div class="wg-track">
+                        <div class="wg-fill" style="height: ${stats.perc}%;"></div>
+                    </div>
+                    <span class="wg-day-lbl">${weekdaysShort[date.getDay()]} ${dayNum}</span>
+                </div>
+            `;
+        });
+
+        const weekPerc = totalWeekPossible > 0 ? Math.round((totalWeekDone / totalWeekPossible) * 100) : 0;
+        html += `<div class="daily-grid">`;
+        currentWeekDays.forEach(dayNum => {
+            const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum);
+            const stats = getDayStats(monthKey, dayNum);
+            html += `
+                <div class="day-card">
+                    <div class="day-label">${weekdaysFull[date.getDay()]} ${dayNum}</div>
+                    <div class="day-perc">${stats.perc}%</div>
+                    <div class="day-stat-line" style="color: var(--accent-green)">Done: ${stats.done}</div>
+                    <div class="day-stat-line" style="color: var(--accent-red)">Not Done: ${totalHabitsCount - stats.done}</div>
+                </div>
+            `;
+        });
+        html += `</div>`;
+        html += `
+            <div class="week-graph-container">
+                <div class="wg-header">
+                    <span class="wg-title">WEEK ${currentWeekIndex + 1}</span>
+                    <span>${currentWeekDays[0]}S - ${currentWeekDays[currentWeekDays.length - 1]}S</span>
+                </div>
+                <div class="wg-body"><div class="wg-bars">${barsHtml}</div></div>
+                <div class="wg-footer">
+                    <div class="wg-stat-big">${totalWeekDone}/${totalWeekPossible}</div>
+                    <div class="wg-stat-perc">${weekPerc}%</div>
+                </div>
+            </div>
+        `;
+        container.innerHTML = html;
+    }
+
+    function setWeek(idx) { currentWeekIndex = idx; renderWeekCards(); }
+    function getDayStats(mKey, day) {
+        const habits = allData[mKey] || [];
+        let done = habits.filter(h => h.history && h.history[`d${day}`]).length;
+        let perc = habits.length > 0 ? Math.round((done / habits.length) * 100) : 0;
+        return { done, perc };
+    }
+
+    function updateStats() {
+        const monthKey = getMonthKey(currentDate);
+        const habits = allData[monthKey] || [];
+        const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+        document.getElementById('totalHabits').innerText = habits.length;
+        let monthlyTotalDone = 0;
+        habits.forEach(h => { if(h.history) Object.values(h.history).forEach(val => { if(val) monthlyTotalDone++; }); });
+        document.getElementById('monthlyCompletedCount').innerText = monthlyTotalDone;
+        const totalPossible = habits.length * daysInMonth;
+        const progressPerc = totalPossible > 0 ? Math.round((monthlyTotalDone / totalPossible) * 100) : 0;
+        document.getElementById('progressBar').style.width = progressPerc + '%';
+        document.getElementById('progressPerc').innerText = progressPerc + '%';
+    }
+
+    function addHabit() {
+        const monthKey = getMonthKey(currentDate);
+        const val = document.getElementById('habitInput').value;
+        if(!val) return;
+        allData[monthKey].push({ name: val, history: {} });
+        document.getElementById('habitInput').value = '';
+        save();
+    }
+
+    function changeMonth(dir) { currentDate.setMonth(currentDate.getMonth() + dir); jumpToCurrentWeek(); render(); }
+    
+    async function save() { 
+        await fetch('/api/save_data', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(allData)
+        });
+        render(); 
+    }
+
+    function calculateStreaks() {
+        const monthKey = getMonthKey(currentDate);
+        const habits = allData[monthKey] || [];
+        const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+        let longest = 0, bestDayPerc = 0, runningStreak = 0;
+        for (let i = 1; i <= daysInMonth; i++) {
+            const dayKey = `d${i}`;
+            const doneCount = habits.filter(h => h.history && h.history[dayKey]).length;
+            const perc = habits.length > 0 ? Math.round((doneCount / habits.length) * 100) : 0;
+            if (perc > bestDayPerc) bestDayPerc = perc;
+            if (doneCount > 0) {
+                runningStreak++;
+                if (runningStreak > longest) longest = runningStreak;
+            } else runningStreak = 0;
+        }
+        let currentStreak = 0;
+        for (let i = daysInMonth; i >= 1; i--) {
+            const doneCount = habits.filter(h => h.history && h.history[`d${i}`]).length;
+            if (doneCount > 0) currentStreak++;
+            else if (i < new Date().getDate()) break;
+        }
+        return { longest, currentStreak, bestDayPerc };
+    }
+
+    function openStatsModal() {
+        const streaks = calculateStreaks();
+        const monthKey = getMonthKey(currentDate);
+        document.getElementById('trackedCount').innerText = allData[monthKey].length;
+        document.getElementById('rateVal').innerText = document.getElementById('progressPerc').innerText;
+        document.getElementById('totalVal').innerText = document.getElementById('monthlyCompletedCount').innerText;
+        document.getElementById('currStreak').innerText = `${streaks.currentStreak} days`;
+        document.getElementById('longStreak').innerText = `${streaks.longest} days`;
+        document.getElementById('bestDay').innerText = `${streaks.bestDayPerc}%`;
+        const grid = document.getElementById('yearlyGrid');
+        grid.innerHTML = '';
+        ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].forEach((m, idx) => {
+            const habitsM = allData[`${currentDate.getFullYear()}-${idx}`] || [];
+            let doneM = 0;
+            habitsM.forEach(h => { if(h.history) Object.values(h.history).forEach(v => { if(v) doneM++; }); });
+            const percM = (habitsM.length * 30) > 0 ? Math.round((doneM/(habitsM.length * 30))*100) : 0;
+            grid.innerHTML += `<div class="month-overview-card ${idx === currentDate.getMonth() ? 'active-month' : ''}"><span>${m}</span><strong>${percM}%</strong></div>`;
+        });
+        document.getElementById('statsModal').style.display = 'flex';
+    }
+
+    function openCopyModal() {
+        const prevKey = getMonthKey(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+        const prevHabits = allData[prevKey] || [];
+        const list = document.getElementById('modalList');
+        list.innerHTML = prevHabits.length ? '' : '<p style="color:#8b949e;text-align:center;">No habits in previous month.</p>';
+        prevHabits.forEach(h => { list.innerHTML += `<div><input type="checkbox" class="copy-check" value="${h.name}" checked> <label style="color:#fff;">${h.name}</label></div>`; });
+        document.getElementById('copyModal').style.display = 'flex';
+    }
+
+    function openDeleteModal() {
+        const monthKey = getMonthKey(currentDate);
+        const habits = allData[monthKey] || [];
+        const list = document.getElementById('deleteList');
+        list.innerHTML = habits.length ? '' : '<p style="padding:10px; text-align:center; color:#8b949e">No habits to delete.</p>';
+        habits.forEach((h, idx) => {
+            list.innerHTML += `<div class="modal-list-item"><input type="checkbox" class="modal-check del-check" value="${idx}"><label style="cursor:pointer; flex-grow:1;" onclick="this.previousElementSibling.click()">${h.name}</label></div>`;
+        });
+        document.getElementById('deleteModal').style.display = 'flex';
+    }
+
+    function executeBulkDelete() {
+        const checkboxes = document.querySelectorAll('.del-check:checked');
+        if(checkboxes.length === 0) return alert("Please select at least one habit to delete.");
+        if(confirm(`Are you sure you want to delete ${checkboxes.length} habits?`)) {
+            const monthKey = getMonthKey(currentDate);
+            Array.from(checkboxes).map(cb => parseInt(cb.value)).sort((a, b) => b - a).forEach(idx => allData[monthKey].splice(idx, 1));
+            save(); closeModal('deleteModal');
+        }
+    }
+
+    function confirmCopy() {
+        document.querySelectorAll('.copy-check:checked').forEach(cb => { allData[getMonthKey(currentDate)].push({ name: cb.value, history: {} }); });
+        save(); closeModal('copyModal');
+    }
+
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    // --- EMOJI PICKER LOGIC (NEW) ---
+
+    // 1. Define Categories based on your request
+    const emojiCategories = {
+        "Motivation & Success": ["🔥", "💯", "🚀", "🧠", "🏆", "👑", "⚡", "💥", "✨", "🛤️"],
+        "Study & Focus": ["📖", "📘", "📕", "📚", "✍️", "🧑‍🎓", "🧠", "🖊️"],
+        "Health & Gym": ["🏋️", "💪", "🤸", "🏃", "🧘", "🚴", "🏃‍♂️", "🏆"],
+        "Water & Hydration": ["💧", "🚰", "🥤", "🫗"],
+        "Time Management": ["⏰", "🎯", "📅", "✅", "🔁", "🧩"],
+        "Growth & Nature": ["🌱", "🌿", "🌳", "🔄", "📈", "🛠️"],
+        "Mood & Relax": ["😊", "😌", "😄", "🙌", "😎", "🧘‍♀️"]
+    };
+
+    let recentEmojis = JSON.parse(localStorage.getItem('recentEmojis')) || ["🔥", "✅", "💪", "📚"];
+
+    function toggleEmojiPicker() {
+        const picker = document.getElementById('emojiPicker');
+        const isVisible = picker.classList.contains('show');
+        
+        if (!isVisible) {
+            renderEmojiPicker(); // Build the picker content only when opening
+            picker.classList.add('show');
+        } else {
+            picker.classList.remove('show');
+        }
+    }
+
+    // Function to render the emoji list (Recently Used + Categories)
+    function renderEmojiPicker() {
+        const container = document.getElementById('emojiPicker');
+        container.innerHTML = ''; // Clear previous content
+
+        // 1. Render Recently Used Section
+        if (recentEmojis.length > 0) {
+            const recentTitle = document.createElement('div');
+            recentTitle.className = 'emoji-category-title';
+            recentTitle.innerText = 'Recently Used 🕒';
+            container.appendChild(recentTitle);
+
+            const recentGrid = document.createElement('div');
+            recentGrid.className = 'emoji-grid';
+            recentEmojis.forEach(emoji => {
+                const span = document.createElement('span');
+                span.className = 'emoji-item';
+                span.innerText = emoji;
+                span.onclick = () => insertEmoji(emoji);
+                recentGrid.appendChild(span);
+            });
+            container.appendChild(recentGrid);
+        }
+
+        // 2. Render All Categories
+        for (const [category, emojis] of Object.entries(emojiCategories)) {
+            const catTitle = document.createElement('div');
+            catTitle.className = 'emoji-category-title';
+            catTitle.innerText = category;
+            container.appendChild(catTitle);
+
+            const grid = document.createElement('div');
+            grid.className = 'emoji-grid';
+            emojis.forEach(emoji => {
+                const span = document.createElement('span');
+                span.className = 'emoji-item';
+                span.innerText = emoji;
+                span.onclick = () => insertEmoji(emoji);
+                grid.appendChild(span);
+            });
+            container.appendChild(grid);
+        }
+    }
+
+    // Function to handle emoji click
+    function insertEmoji(emoji) {
+        const input = document.getElementById('habitInput');
+        
+        // Append emoji to current input value
+        input.value += emoji + " "; 
+        input.focus(); // Keep focus on input
+
+        // Update Recently Used
+        updateRecentEmojis(emoji);
+        
+        // Re-render to show updated "Recently Used" immediately if keeping open
+        renderEmojiPicker();
+    }
+
+    function updateRecentEmojis(emoji) {
+        // Remove existing if present (to move it to front)
+        recentEmojis = recentEmojis.filter(e => e !== emoji);
+        
+        // Add to front
+        recentEmojis.unshift(emoji);
+        
+        // Keep only top 16
+        if (recentEmojis.length > 16) {
+            recentEmojis.pop();
+        }
+
+        // Save to LocalStorage
+        localStorage.setItem('recentEmojis', JSON.stringify(recentEmojis));
+    }
+
+    // Close Emoji Picker when clicking outside
+    document.addEventListener('click', function(event) {
+        const picker = document.getElementById('emojiPicker');
+        const btn = document.querySelector('.emoji-trigger-btn');
+        const isClickInside = picker.contains(event.target) || btn.contains(event.target);
+
+        if (!isClickInside && picker.classList.contains('show')) {
+            picker.classList.remove('show');
+        }
+    });
+</script>
+</body>
+</html>
