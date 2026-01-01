@@ -1118,7 +1118,7 @@
         const data = await res.json();
         
         if(data.success) {
-            document.getElementById('greetingDisplay').innerText = `Welcome Back, ${newName}!`;
+            document.getElementById('greetingDisplay').innerText = `Welcome Back, ${newName}`;
             alert(data.message);
         } else {
             alert("Error updating profile.");
@@ -1997,3 +1997,4 @@
 </body>
 
 </html>
+
