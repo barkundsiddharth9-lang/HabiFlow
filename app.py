@@ -10,6 +10,11 @@ app.config['SECRET_KEY'] = 'secret-key-change-this'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
 
+# --- IMP: हे इथे ऍड केले आहे (Database Creation Fix) ---
+with app.app_context():
+    db.create_all()
+# -----------------------------------------------------
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -201,6 +206,4 @@ def logout():
     return jsonify({'success': True})
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)
