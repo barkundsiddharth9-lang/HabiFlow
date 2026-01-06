@@ -1,14 +1,21 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import timedelta
 import json
 import os
 
 app = Flask(__name__)
-# महत्वाची टीप: सिक्युरिटीसाठी ही Key नंतर बदलावी
-app.config['SECRET_KEY'] = 'secret-key-change-this' 
+
+# --- CONFIGURATION ---
+app.config['SECRET_KEY'] = 'tuza_secret_key_ethe_ahe'  # Updated Key
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Session Lifetime Configuration (30 Days)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
+
 db = SQLAlchemy(app)
 
 login_manager = LoginManager()
@@ -75,7 +82,10 @@ def login():
     user = User.query.filter_by(username=data['username']).first()
     
     if user and check_password_hash(user.password, data['password']):
-        login_user(user)
+        # --- IMPORTANT: SESSION PERSISTENCE ---
+        session.permanent = True  # Ensures the session lives for 30 days
+        login_user(user, remember=True) # Flask-Login's remember functionality
+        
         full_name = f"{user.first_name} {user.last_name}".strip()
         return jsonify({
             'success': True, 
@@ -90,6 +100,7 @@ def login():
 @app.route('/api/check_session', methods=['GET'])
 def check_session():
     if current_user.is_authenticated:
+        # User is already logged in
         full_name = f"{current_user.first_name} {current_user.last_name}".strip()
         return jsonify({
             'is_logged_in': True, 
@@ -198,12 +209,10 @@ def get_data():
 @login_required
 def logout():
     logout_user()
+    session.clear() # Clears the session completely
     return jsonify({'success': True})
 
-# --- IMP: Database Creation Logic (Placed correctly at the end) ---
-with app.app_context():
-    db.create_all()
-# ----------------------------------------------------------------
-
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
