@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HabiFlow - Smart Tracker</title>
+    <title>HabiFlow 2026 - Strict Mode</title>
     
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='32' fill='%2300AA55'/><text x='50%25' y='54%25' font-family='cursive, sans-serif' font-weight='bold' font-style='italic' font-size='40' fill='white' text-anchor='middle' dominant-baseline='middle'>H</text></svg>">
 
@@ -14,32 +14,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <script>
-      // Right Click Disable
-      document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-      });
-
-      // F12 and Inspect Shortcuts Disable
-      document.onkeydown = function(e) {
-        if(event.keyCode == 123) { // F12 key
-           return false;
-        }
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { // Ctrl+Shift+I
-           return false;
-        }
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { // Ctrl+Shift+C
-           return false;
-        }
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { // Ctrl+Shift+J
-           return false;
-        }
-        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { // Ctrl+U (View Source)
-           return false;
-        }
-      }
-    </script>
-
     <style>
         /* --- ORIGINAL CSS --- */
         :root {
@@ -47,7 +21,7 @@
             --panel-bg: #1a1d23;
             --btn-bg: #21262d;
             --accent-blue: #0095ff;
-            --accent-green: #00AA55; /* Updated to your color #0A5 */
+            --accent-green: #00AA55;
             --accent-yellow: #e3b341; 
             --accent-red: #ff4d4d;
             --text-gray: #8b949e;
@@ -55,8 +29,7 @@
             --border: #30363d;
             --input-bg: #0d1117;
             
-            /* YOUR NEW LOGO COLORS */
-            --logo-main: #00AA55; /* #0A5 Code */
+            --logo-main: #00AA55; 
             --logo-text: #ffffff; 
         }
 
@@ -67,6 +40,7 @@
             margin: 0;
             padding: 0;
             overflow-x: hidden;
+            user-select: none; 
         }
 
         /* --- AUTH SYSTEM CSS --- */
@@ -94,7 +68,6 @@
             align-items: center;
         }
 
-        /* --- CSS LOGO STYLE --- */
         .css-logo-circle {
             width: 50px;
             height: 50px;
@@ -112,7 +85,6 @@
             box-sizing: border-box;
         }
 
-        /* Big Logo for Login Screen */
         .auth-logo-big {
             width: 100px;
             height: 100px;
@@ -146,7 +118,6 @@
         .user-greeting { font-size: 1.5rem; color: var(--accent-green); font-weight: bold; margin-bottom: 5px; display: block; }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; box-sizing: border-box; }
         
-        /* --- HEADER & QUOTE CSS --- */
         header { 
             display: flex; 
             justify-content: space-between; 
@@ -157,43 +128,18 @@
             flex-wrap: wrap; 
         }
 
-        .header-left {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: flex-start;
-        }
+        .header-left { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
 
-        /* --- HEADER LOGO CONTAINER --- */
         .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 6px 15px 6px 8px;
-            border-radius: 50px;
-            border: 1px solid var(--border);
-            transition: transform 0.2s;
-            cursor: pointer; /* ADDED POINTER CURSOR */
+            display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.03); padding: 6px 15px 6px 8px;
+            border-radius: 50px; border: 1px solid var(--border);
+            transition: transform 0.2s; cursor: pointer;
         }
-        
-        .logo-container:hover {
-            transform: scale(1.02);
-            border-color: var(--logo-main);
-        }
+        .logo-container:hover { transform: scale(1.02); border-color: var(--logo-main); }
 
-        .app-name {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--logo-main); /* "Habi" becomes Green #0A5 */
-            letter-spacing: -0.5px;
-            font-family: 'Segoe UI', sans-serif;
-        }
-        
-        .app-name span {
-            color: var(--text-white); /* "Flow" becomes White */
-        }
+        .app-name { font-size: 1.5rem; font-weight: 800; color: var(--logo-main); letter-spacing: -0.5px; font-family: 'Segoe UI', sans-serif; }
+        .app-name span { color: var(--text-white); }
 
         .quote-box {
             padding: 15px 20px;
@@ -205,16 +151,8 @@
             box-sizing: border-box;
             flex-grow: 1; 
         }
+        .quote-text { font-size: 0.95rem; font-style: italic; color: var(--text-white); font-weight: 500; line-height: 1.4; }
         
-        .quote-text {
-            font-size: 0.95rem;
-            font-style: italic;
-            color: var(--text-white);
-            font-weight: 500;
-            line-height: 1.4;
-        }
-        
-        /* --- USER MENU STYLES --- */
         .top-bar { display: flex; justify-content: flex-end; padding-top: 10px; position: relative; }
         .user-menu-container { position: relative; display: inline-block; }
         .user-menu-btn { 
@@ -227,32 +165,16 @@
         .user-menu-btn:hover { background: var(--btn-bg); }
         
         .user-dropdown {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 50px;
-            background-color: var(--panel-bg);
-            min-width: 160px;
+            display: none; position: absolute; right: 0; top: 50px;
+            background-color: var(--panel-bg); min-width: 160px;
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            z-index: 1001;
-            overflow: hidden;
+            border: 1px solid var(--border); border-radius: 8px;
+            z-index: 1001; overflow: hidden;
         }
-        .user-dropdown a {
-            color: var(--text-white);
-            padding: 12px 16px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
+        .user-dropdown a { color: var(--text-white); padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; }
         .user-dropdown a:hover { background-color: var(--btn-bg); }
         .show { display: block; }
 
-        /* --- SETTINGS MODAL STYLES --- */
         .settings-content { width: 450px; text-align: left; }
         .settings-section { margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
         .settings-section:last-child { border-bottom: none; }
@@ -265,23 +187,16 @@
         }
         .form-group { margin-bottom: 15px; }
         .form-label { display: block; font-size: 0.85rem; color: var(--text-white); margin-bottom: 5px; }
-        .settings-input { 
-            width: 100%; padding: 10px; background: var(--input-bg); 
-            border: 1px solid var(--border); border-radius: 6px; 
-            color: var(--text-white); box-sizing: border-box; 
-        }
+        .settings-input { width: 100%; padding: 10px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text-white); box-sizing: border-box; }
         .settings-input:disabled { opacity: 0.6; cursor: not-allowed; }
         
         .settings-btn {
-            width: 100%; padding: 10px; background: var(--btn-bg); 
-            border: 1px solid var(--border); color: var(--text-white);
-            border-radius: 6px; cursor: pointer; text-align: left;
-            margin-bottom: 10px; transition: 0.2s;
+            width: 100%; padding: 10px; background: var(--btn-bg); border: 1px solid var(--border); color: var(--text-white);
+            border-radius: 6px; cursor: pointer; text-align: left; margin-bottom: 10px; transition: 0.2s;
             display: flex; justify-content: space-between; align-items: center;
         }
         .settings-btn:hover { border-color: var(--accent-blue); }
 
-        /* --- EXISTING CSS CONTINUED --- */
         #pdfPage1 { width: 100%; }
         #monthlyGraphContainer { width: 100%; }
         #detailedReportContainer { width: 100%; background: #161b22; padding: 40px; border-radius: 12px; position: absolute; left: -9999px; top: 0; z-index: -1; }
@@ -308,7 +223,6 @@
         .hover-up { transition: transform 0.2s ease-out; }
         .hover-up:hover { transform: translateY(-3px); }
 
-        /* HEADER & NAV BUTTONS */
         .month-nav { display: flex; align-items: center; gap: 15px; background: var(--panel-bg); padding: 5px 10px; border-radius: 12px; border: 1px solid var(--border); flex-wrap: wrap; }
         .nav-btn { background: transparent; border: 1px solid transparent; color: var(--text-white); width: 35px; height: 35px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
         .nav-btn:hover { background: var(--btn-bg); border-color: var(--text-gray); }
@@ -329,17 +243,40 @@
         .percentage-text { fill: var(--text-white); font-family: 'Segoe UI', sans-serif; font-weight: 800; font-size: 0.55em; text-anchor: middle; }
         .label-text { fill: var(--text-gray); font-family: 'Segoe UI', sans-serif; font-weight: 500; font-size: 0.22em; text-anchor: middle; }
 
-        /* --- UPDATED INPUT GROUP WITH EMOJI --- */
         .input-group { display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
         .input-wrapper { position: relative; flex-grow: 1; display: flex; align-items: center; }
-        
-        /* Input padding updated for emoji btn */
         input[type="text"] { width: 100%; background: var(--panel-bg); border: 1px solid var(--border); padding: 14px; padding-right: 40px; border-radius: 8px; color: var(--text-white); outline: none; min-width: 200px; box-sizing: border-box; }
         
         .btn-add { background: var(--accent-blue); color: white; border: none; padding: 0 30px; border-radius: 8px; font-weight: bold; cursor: pointer; height: 48px; }
         .btn-sec { background: var(--panel-bg); color: var(--text-white); border: 1px solid var(--border); padding: 0 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; height: 48px; justify-content: center;}
         .btn-del-multi { border-color: var(--accent-red); color: var(--accent-red); }
         .btn-del-multi:hover { background: var(--accent-red); color: white; }
+
+        /* --- UPDATED CHECKBOX STYLES (FIXED) --- */
+        .check-box { width: 18px; height: 18px; cursor: pointer; appearance: none; border: 2px solid #3d4450; border-radius: 4px; position: relative; margin: 0 auto; display: block; }
+        .check-box:checked { background-color: var(--accent-green); border-color: var(--accent-green); }
+        .check-box:checked::after { content: '✓'; position: absolute; color: #000; left: 3px; top: -2px; font-size: 12px; font-weight: 900; }
+        
+        /* Disabled State (UPDATED to keep GREEN) */
+        .check-box:disabled { 
+            cursor: not-allowed; 
+            opacity: 0.7; /* Opacity increased for visibility */
+            border-color: #30363d; 
+        }
+        
+        /* FIX: If checked AND disabled (past completed), force it to be GREEN */
+        .check-box:checked:disabled { 
+            background-color: var(--accent-green) !important; 
+            border-color: var(--accent-green) !important; 
+            opacity: 1; 
+        }
+        .check-box:checked:disabled::after { 
+            color: #000; /* Keep tick black */
+        }
+
+        .check-box.missed-today { border-color: var(--accent-red) !important; background-color: rgba(255, 77, 77, 0.15); animation: pulse-red 2s infinite; }
+        .check-box.missed-past { border-color: var(--accent-red) !important; background-color: rgba(255, 77, 77, 0.1); }
+        .check-box.missed-past::after { content: '✕'; position: absolute; color: var(--accent-red); font-size: 14px; font-weight: 900; left: 2px; top: -3px; }
 
         .table-container { background: var(--panel-bg); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px; width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 1000px; }
@@ -362,13 +299,6 @@
         .edit-icon:hover { color: var(--accent-blue); transform: scale(1.2); }
         .del-icon { cursor: pointer; transition: 0.2s; color: var(--text-white); font-size: 1rem; }
         .del-icon:hover { color: var(--accent-red); transform: scale(1.2); }
-
-        .check-box { width: 18px; height: 18px; cursor: pointer; appearance: none; border: 2px solid #3d4450; border-radius: 4px; position: relative; margin: 0 auto; display: block; }
-        .check-box:checked { background-color: var(--accent-green); border-color: var(--accent-green); }
-        .check-box:checked::after { content: '✓'; position: absolute; color: #000; left: 3px; top: -2px; font-size: 12px; font-weight: 900; }
-        .check-box.missed-today { border-color: var(--accent-red) !important; background-color: rgba(255, 77, 77, 0.15); animation: pulse-red 2s infinite; }
-        .check-box.missed-past { border-color: var(--accent-red) !important; background-color: rgba(255, 77, 77, 0.1); }
-        .check-box.missed-past::after { content: '✕'; position: absolute; color: var(--accent-red); font-size: 14px; font-weight: 900; left: 2px; top: -3px; }
 
         .daily-overview-card { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; gap: 30px; }
         .daily-info h2 { margin: 0 0 5px 0; font-size: 1.4rem; color: var(--text-white); }
@@ -446,98 +376,32 @@
 
         /* --- EMOJI PICKER CSS --- */
         .emoji-trigger-btn {
-            position: absolute;
-            right: 10px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2rem;
-            filter: grayscale(100%);
-            transition: 0.2s;
-            padding: 5px;
-            border-radius: 50%;
+            position: absolute; right: 10px; background: transparent; border: none; cursor: pointer;
+            font-size: 1.2rem; filter: grayscale(100%); transition: 0.2s; padding: 5px; border-radius: 50%;
         }
-
-        .emoji-trigger-btn:hover {
-            filter: grayscale(0%);
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: scale(1.1);
-        }
-
+        .emoji-trigger-btn:hover { filter: grayscale(0%); background-color: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
         .emoji-picker-container {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 300px;
-            max-height: 300px;
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            z-index: 1000;
-            overflow-y: auto;
-            padding: 10px;
-            margin-top: 5px;
+            display: none; position: absolute; top: 100%; left: 0; width: 300px; max-height: 300px;
+            background-color: var(--panel-bg); border: 1px solid var(--border); border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 1000; overflow-y: auto; padding: 10px; margin-top: 5px;
         }
+        .emoji-picker-container.show { display: block; }
+        .emoji-category-title { font-size: 0.75rem; color: var(--text-gray); text-transform: uppercase; margin: 10px 0 5px 0; font-weight: bold; border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+        .emoji-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; }
+        .emoji-item { cursor: pointer; font-size: 1.2rem; text-align: center; padding: 4px; border-radius: 4px; transition: background 0.2s; }
+        .emoji-item:hover { background-color: rgba(255, 255, 255, 0.1); transform: scale(1.2); }
+        .emoji-picker-container::-webkit-scrollbar { width: 6px; }
+        .emoji-picker-container::-webkit-scrollbar-track { background: var(--bg-dark); }
+        .emoji-picker-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-        .emoji-picker-container.show {
-            display: block;
-        }
-
-        .emoji-category-title {
-            font-size: 0.75rem;
-            color: var(--text-gray);
-            text-transform: uppercase;
-            margin: 10px 0 5px 0;
-            font-weight: bold;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 2px;
-        }
-
-        .emoji-grid {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 5px;
-        }
-
-        .emoji-item {
-            cursor: pointer;
-            font-size: 1.2rem;
-            text-align: center;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-
-        .emoji-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: scale(1.2);
-        }
-
-        /* Scrollbar styling for emoji picker */
-        .emoji-picker-container::-webkit-scrollbar {
-            width: 6px;
-        }
-        .emoji-picker-container::-webkit-scrollbar-track {
-            background: var(--bg-dark); 
-        }
-        .emoji-picker-container::-webkit-scrollbar-thumb {
-            background: var(--border); 
-            border-radius: 3px;
-        }
-
-        /* --- MEDIA QUERIES FOR RESPONSIVE DESIGN --- */
         @media (max-width: 900px) {
             .stats-panel { grid-template-columns: 1fr 1fr; }
             .stats-cards-grid { grid-template-columns: repeat(2, 1fr); }
         }
-
         @media (max-width: 768px) {
             header { flex-direction: column; align-items: flex-start; }
             .quote-box { text-align: left; max-width: 100%; }
         }
-
         @media (max-width: 600px) {
             .stats-panel { grid-template-columns: 1fr; gap: 20px; padding: 15px; }
             .daily-overview-card { flex-direction: column; align-items: flex-start; gap: 15px; }
@@ -558,7 +422,6 @@
     <div id="authSection">
         <div class="auth-container">
             <div class="css-logo-circle auth-logo-big">H</div>
-            
             <div id="loginForm">
                 <div class="auth-tabs">
                     <div class="auth-tab active">Login</div>
@@ -643,7 +506,6 @@
                             <div class="css-logo-circle">H</div>
                             <span class="app-name">Habi<span>Flow</span></span>
                         </div>
-                        
                         <div id="greetingDisplay" class="user-greeting"></div>
                         <div class="month-nav">
                             <button class="nav-btn hover-up" id="prevBtn" onclick="changeMonth(-1)">←</button>
@@ -886,6 +748,11 @@
     </div>
 
 <script>
+    // --- RIGHT CLICK DISABLE (Added Here) ---
+    document.addEventListener('contextmenu', function(event) {
+        event.preventDefault();
+    });
+
     // --- QUOTES ARRAY ---
     const quotes = [
         "Your life changes the moment you decide to change yourself.",
@@ -1403,7 +1270,8 @@
         document.getElementById('monthLabel').innerText = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
         
         const prevBtn = document.getElementById('prevBtn');
-        if (currentDate.getFullYear() < 2025 || (currentDate.getFullYear() === 2025 && currentDate.getMonth() <= 11)) {
+        // --- 2026 Logic ---
+        if (currentDate.getFullYear() < 2026 || (currentDate.getFullYear() === 2026 && currentDate.getMonth() === 0)) {
              prevBtn.disabled = true;
         } else {
              prevBtn.disabled = false;
@@ -1599,10 +1467,11 @@
         targetDate.setHours(0,0,0,0);
         today.setHours(0,0,0,0);
 
-        if (targetDate < today) {
-            alert("Restricted: You cannot check yesterday's habit.");
-            render(); 
-            return;
+        // --- STRICT RESTRICTION: Only Today ---
+        // Jar targetDate aajchi nasel, tar alert dya ani return kara.
+        if (targetDate.getTime() !== today.getTime()) {
+            alert("Tumhi fakt aaju chya divshi changes karu shakta! (Only Today) 🔒"); 
+            return; 
         }
 
         const monthKey = getMonthKey(currentDate);
@@ -1648,7 +1517,9 @@
         const realToday = realTodayDate.getDate();
         const realMonth = realTodayDate.getMonth();
         const realYear = realTodayDate.getFullYear();
-        const startDateLimit = new Date(2025, 11, 25);
+        
+        // Start limit 2026
+        const startDateLimit = new Date(2026, 0, 1); 
         startDateLimit.setHours(0,0,0,0);
 
         let weekRowHtml = `<tr><th rowspan="2" class="habit-col-header">My Habits</th>`;
@@ -1691,12 +1562,18 @@
                 const checked = h.history && h.history[dayKey] ? 'checked' : '';
                 const cellDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
                 cellDate.setHours(0,0,0,0);
+                
                 let statusClass = '';
                 if (!checked) {
                     if (cellDate.getTime() === realTodayDate.getTime()) statusClass = 'missed-today';
                     else if (cellDate.getTime() < realTodayDate.getTime() && cellDate.getTime() >= startDateLimit.getTime()) statusClass = 'missed-past';
                 }
-                row += `<td><input type="checkbox" class="check-box ${statusClass}" onclick="toggle(${hIdx}, ${i})" ${checked}></td>`;
+
+                // --- DISABLE LOGIC ---
+                // Jar cellDate aajchi nsel, tar disable kara.
+                const isDisabled = (cellDate.getTime() !== realTodayDate.getTime()) ? 'disabled' : '';
+
+                row += `<td><input type="checkbox" class="check-box ${statusClass}" onclick="toggle(${hIdx}, ${i})" ${checked} ${isDisabled}></td>`;
             }
             body.innerHTML += row + '</tr>';
         });
